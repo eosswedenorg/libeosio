@@ -1,0 +1,26 @@
+#  This script provides the libeosio as an import target
+# ----------------------------------------------------------
+#
+# Use find_package() so cmake will find libeosio:
+#
+#   find_package(libeosio)			# No specific version
+# 	find_package(libeosio REQUIRED) # No specific version, but the library must be found.
+#   find_package(libeosio 0.1) 		# any 0.1.x, but the library is optional.
+#	find_package(libeosio 0.1.0) 	# 0.1.0 or greater, but the library is optional.
+#
+# Then you just link the you target with eoskeygen target:
+#
+# 	target_link_libraries( ${PROGRAM_EXE} PUBLIC libeosio )
+#
+# if you do not specify REQUIRED. you must check the variable libeosio_FOUND
+# and and only link to it if it's defined:
+#
+#	if (libeosio_FOUND)
+#   	...
+#		target_link_libraries( ${PROGRAM_EXE} PUBLIC libeosio )
+#		..
+#	endif()
+
+set(LIBEOSIO_VERSION "@PROJECT_VERSION@")
+
+include ( "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake" )
