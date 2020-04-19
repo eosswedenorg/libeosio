@@ -21,21 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef LIBEOSIO_HASH_H
-#define LIBEOSIO_HASH_H
+#ifndef LIBEOSIO_WIF_H
+#define LIBEOSIO_WIF_H
 
-#include <cstdint>
-#include <libeosio/types.h>
+#include <libeosio/types.hpp>
 
 namespace libeosio {
 
-sha256_t* sha256(const unsigned char *data, std::size_t len, sha256_t* out);
+std::string wif_priv_encode(ec_privkey_t priv);
 
-// sha256 double.
-sha256_t* sha256d(const unsigned char *data, std::size_t len, sha256_t* out);
+std::string wif_pub_encode(ec_pubkey_t pub);
 
-ripemd160_t* ripemd160(const unsigned char *data, std::size_t len, ripemd160_t* out);
+void wif_print_key(const struct ec_keypair *key);
 
 } // namespace libeosio
 
-#endif /* LIBEOSIO_HASH_H */
+#endif /* LIBEOSIO_WIF_H */

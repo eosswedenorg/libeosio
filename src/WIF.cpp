@@ -23,9 +23,9 @@
  */
 #include <iostream>
 #include <string.h>
-#include <libeosio/base58.h>
-#include <libeosio/checksum.h>
-#include <libeosio/WIF.h>
+#include <libeosio/base58.hpp>
+#include <libeosio/checksum.hpp>
+#include <libeosio/WIF.hpp>
 
 namespace libeosio {
 

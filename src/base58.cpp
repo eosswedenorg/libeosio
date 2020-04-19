@@ -27,7 +27,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cassert>
-#include <libeosio/base58.h>
+#include <libeosio/base58.hpp>
 
 namespace libeosio {
 

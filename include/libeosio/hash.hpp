@@ -21,34 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef LIBEOSIO_CHECKSUM_H
-#define LIBEOSIO_CHECKSUM_H
+#ifndef LIBEOSIO_HASH_H
+#define LIBEOSIO_HASH_H
 
 #include <cstdint>
-#include <cstring>
-#include <array>
-#include <libeosio/hash.h>
+#include <libeosio/types.hpp>
 
 namespace libeosio {
 
-#define CHECKSUM_SIZE 4
+sha256_t* sha256(const unsigned char *data, std::size_t len, sha256_t* out);
 
-typedef std::array<unsigned char, CHECKSUM_SIZE> checksum_t;
+// sha256 double.
+sha256_t* sha256d(const unsigned char *data, std::size_t len, sha256_t* out);
 
-template <typename T, T* (*F)(const unsigned char *, std::size_t, T*)>
-inline checksum_t checksum(const unsigned char* data, std::size_t len) {
-	checksum_t crc;
-	T hash;
-
-	F(data, len, &hash);
-	std::memcpy(crc.data(), &hash, crc.size());
-	return crc;
-}
-
-#define checksum_sha256 checksum<sha256_t, sha256>
-#define checksum_sha256d checksum<sha256_t, sha256d>
-#define checksum_ripemd160 checksum<ripemd160_t, ripemd160>
+ripemd160_t* ripemd160(const unsigned char *data, std::size_t len, ripemd160_t* out);
 
 } // namespace libeosio
 
-#endif /* LIBEOSIO_CHECKSUM_H */
+#endif /* LIBEOSIO_HASH_H */

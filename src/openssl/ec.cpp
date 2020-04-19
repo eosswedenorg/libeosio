@@ -24,7 +24,7 @@
 #include <openssl/ec.h>
 #include <openssl/bn.h>
 #include <openssl/hmac.h>
-#include <libeosio/ec.h>
+#include <libeosio/ec.hpp>
 
 namespace libeosio {
 

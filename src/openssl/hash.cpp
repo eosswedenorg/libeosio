@@ -23,7 +23,7 @@
  */
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
-#include <libeosio/hash.h>
+#include <libeosio/hash.hpp>
 
 namespace libeosio {
 

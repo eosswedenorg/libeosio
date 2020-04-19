@@ -21,19 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef LIBEOSIO_WIF_H
-#define LIBEOSIO_WIF_H
+#ifndef LIBEOSIO_CHECKSUM_H
+#define LIBEOSIO_CHECKSUM_H
 
-#include <libeosio/types.h>
+#include <cstdint>
+#include <cstring>
+#include <array>
+#include <libeosio/hash.hpp>
 
 namespace libeosio {
 
-std::string wif_priv_encode(ec_privkey_t priv);
+#define CHECKSUM_SIZE 4
 
-std::string wif_pub_encode(ec_pubkey_t pub);
+typedef std::array<unsigned char, CHECKSUM_SIZE> checksum_t;
 
-void wif_print_key(const struct ec_keypair *key);
+template <typename T, T* (*F)(const unsigned char *, std::size_t, T*)>
+inline checksum_t checksum(const unsigned char* data, std::size_t len) {
+	checksum_t crc;
+	T hash;
+
+	F(data, len, &hash);
+	std::memcpy(crc.data(), &hash, crc.size());
+	return crc;
+}
+
+#define checksum_sha256 checksum<sha256_t, sha256>
+#define checksum_sha256d checksum<sha256_t, sha256d>
+#define checksum_ripemd160 checksum<ripemd160_t, ripemd160>
 
 } // namespace libeosio
 
-#endif /* LIBEOSIO_WIF_H */
+#endif /* LIBEOSIO_CHECKSUM_H */

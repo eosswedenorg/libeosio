@@ -24,7 +24,7 @@
 #ifndef LIBEOSIO_EC_H
 #define LIBEOSIO_EC_H
 
-#include <libeosio/types.h>
+#include <libeosio/types.hpp>
 
 namespace libeosio {
 
