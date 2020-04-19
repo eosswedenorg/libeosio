@@ -62,7 +62,7 @@ jobs:
         id: package
         run: |
           cmake --build build --config Release --target package
-          $FILE=(ls build/libeoskeygen*.zip)
+          $FILE=(ls build/libeosio*.zip)
           echo "::set-output name=filename::$FILE"
           echo "::set-output name=name::$(([io.fileinfo]"$FILE").basename).zip"
 
