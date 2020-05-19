@@ -28,10 +28,19 @@
 
 namespace libeosio {
 
+/**
+ * Encode an EC private key to WIF String.
+ */
 std::string wif_priv_encode(ec_privkey_t priv);
 
+/**
+ * Encode an EC public key to WIF String.
+ */
 std::string wif_pub_encode(ec_pubkey_t pub);
 
+/**
+ * Prints an EC keypair in WIF format to standard out.
+ */
 void wif_print_key(const struct ec_keypair *key);
 
 } // namespace libeosio

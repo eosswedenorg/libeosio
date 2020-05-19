@@ -29,16 +29,29 @@
 
 namespace libeosio {
 
+/**
+ * Base58 Encoding functions.
+ */
 std::string base58_encode(const std::string& str);
 std::string base58_encode(const std::vector<unsigned char>& vch);
 std::string base58_encode(const unsigned char* pbegin, const unsigned char* pend);
 
+/**
+ * Returns true if `ch` is a base58 character, false otherwise.
+ */
 bool is_base58(char ch);
 
-// Returns std::string::npos if the string contains only base58 characters
-// Otherwise the position of the first non base58 character is returned.
+/**
+ * Returns std::string::npos if the string contains only base58 characters
+ * Otherwise the position of the first non base58 character is returned.
+ */
 size_t is_base58(const std::string& str);
 
+/**
+ * Strips all non-base58 characters from `str`.
+ * The string is modified in place and the same string is
+ * returned without non-base58 chars.
+ */
 std::string& base58_strip(std::string& str);
 
 } //namespace eoskeygen

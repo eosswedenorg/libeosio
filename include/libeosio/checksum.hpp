@@ -31,10 +31,22 @@
 
 namespace libeosio {
 
+/**
+ * Checksum size (in bytes)
+ */
 #define CHECKSUM_SIZE 4
 
+/**
+ * Checksum datatype
+ */
 typedef std::array<unsigned char, CHECKSUM_SIZE> checksum_t;
 
+/**
+ * Checksum template function.
+ * Template arguments:
+ *  - T: Hash type.
+ *  - F: Hash calculation function, should have the signature `T* F(const unsigned char *, std::size_t, T*)`
+ */
 template <typename T, T* (*F)(const unsigned char *, std::size_t, T*)>
 inline checksum_t checksum(const unsigned char* data, std::size_t len) {
 	checksum_t crc;
@@ -45,6 +57,9 @@ inline checksum_t checksum(const unsigned char* data, std::size_t len) {
 	return crc;
 }
 
+/**
+ * Checksum implementations.
+ */
 #define checksum_sha256 checksum<sha256_t, sha256>
 #define checksum_sha256d checksum<sha256_t, sha256d>
 #define checksum_ripemd160 checksum<ripemd160_t, ripemd160>

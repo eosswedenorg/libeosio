@@ -28,25 +28,36 @@
 
 namespace libeosio {
 
+/**
+ * Elliptic curve private key size (in bytes)
+ */
 #define EC_PRIVKEY_SIZE 32
 
-/*
- * Compressed format!
- * z||x, where byte z specifies which (of the 2) solutions of the quadratic equation y is.
- * Each cordinate is 32 bytes.
+/**
+ * Elliptic curve public key size (in bytes)
+ *
+ * Compressed format: z||x, where byte z specifies which (of the 2) solutions
+ * of the quadratic equation y is. Each cordinate is 32 bytes.
  */
 #define EC_PUBKEY_SIZE (32 + 1)
 
+/**
+ * Elliptic curve priv/pub key datastructures.
+ */
 typedef std::array<unsigned char, EC_PRIVKEY_SIZE> ec_privkey_t;
 typedef std::array<unsigned char, EC_PUBKEY_SIZE> ec_pubkey_t;
 
+/**
+ * Elliptic curve keypair (public + private)
+ */
 struct ec_keypair {
 	ec_privkey_t secret;
 	ec_pubkey_t pub;
 };
 
-// Hashes.
-
+/**
+ * Hashes
+ */
 typedef struct { unsigned char data[20]; } ripemd160_t;
 typedef struct { unsigned char data[32]; } sha256_t;
 

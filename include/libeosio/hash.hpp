@@ -29,11 +29,25 @@
 
 namespace libeosio {
 
+/**
+ * sha256 hashing function.
+ * Hashes the content in `data` up to `len` bytes. result is stored in `out`.
+ * Returns the sampe pointer as `out`.
+ */
 sha256_t* sha256(const unsigned char *data, std::size_t len, sha256_t* out);
 
-// sha256 double.
+/**
+ * sha256 double hashing function.
+ * Hashes the content in `data` up to `len` bytes. result is stored in `out`.
+ * Returns the sampe pointer as `out`.
+ */
 sha256_t* sha256d(const unsigned char *data, std::size_t len, sha256_t* out);
 
+/**
+ * RipeMD160 hashing function.
+ * Hashes the content in `data` up to `len` bytes. result is stored in `out`.
+ * Returns the sampe pointer as `out`.
+ */
 ripemd160_t* ripemd160(const unsigned char *data, std::size_t len, ripemd160_t* out);
 
 } // namespace libeosio
