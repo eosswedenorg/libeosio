@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include <libeosio/base58.hpp>
 #include <libeosio/checksum.hpp>
 #include <libeosio/WIF.hpp>
