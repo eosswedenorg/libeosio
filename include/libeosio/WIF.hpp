@@ -24,6 +24,7 @@
 #ifndef LIBEOSIO_WIF_H
 #define LIBEOSIO_WIF_H
 
+#include <string>
 #include <libeosio/types.hpp>
 
 namespace libeosio {
