@@ -34,6 +34,6 @@ namespace libeosio {
  */
 int ec_generate_key(struct ec_keypair *pair);
 
-} // namespace eoskeygen
+} // namespace libeosio
 
 #endif /* LIBEOSIO_EC_H */
