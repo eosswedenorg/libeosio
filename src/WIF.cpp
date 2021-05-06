@@ -46,7 +46,7 @@ std::string wif_priv_encode(ec_privkey_t priv) {
 	return base58_encode(buf, buf + sizeof(buf));
 }
 
-std::string wif_pub_encode(ec_pubkey_t pub) {
+std::string wif_pub_encode(ec_pubkey_t pub, const std::string& prefix) {
 
 	checksum_t check = checksum_ripemd160(pub.data(), pub.size());
 	unsigned char buf[EC_PUBKEY_SIZE + CHECKSUM_SIZE];
@@ -54,12 +54,12 @@ std::string wif_pub_encode(ec_pubkey_t pub) {
 	memcpy(buf, pub.data(), pub.size());
 	memcpy(buf + EC_PUBKEY_SIZE, check.data(), check.size());
 
-	return "EOS" + base58_encode(buf, buf + sizeof(buf));
+	return prefix.substr(0, 3) + base58_encode(buf, buf + sizeof(buf));
 }
 
-void wif_print_key(const struct ec_keypair *key) {
+void wif_print_key(const struct ec_keypair *key, const std::string& prefix) {
 
-	std::cout << "Public: " << wif_pub_encode(key->pub) << std::endl;
+	std::cout << "Public: " << wif_pub_encode(key->pub, prefix) << std::endl;
 	std::cout << "Private: " << wif_priv_encode(key->secret) << std::endl;
 }
 
