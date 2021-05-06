@@ -54,6 +54,6 @@ size_t is_base58(const std::string& str);
  */
 std::string& base58_strip(std::string& str);
 
-} //namespace eoskeygen
+} //namespace libeosio
 
 #endif /* LIBEOSIO_BASE58_H */
