@@ -7,8 +7,11 @@ on:
 jobs:
   # Debian package for ubuntu.
   ubuntu:
-    name: Ubuntu 18.04
-    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        os: [ ubuntu-20.04, ubuntu-20.04, ubuntu-22.04 ]
+    name: ${{matrix.os}}
+    runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v1
 
