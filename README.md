@@ -18,10 +18,10 @@ You can install `cmake` by reading the [official guide](https://cmake.org/instal
 
 ### Linux
 
-**NOTE:** Only Ubuntu 18.04 is officially supported.
+**NOTE:** Only Ubuntu `18.04`, `20.04` and `22.04` is officially supported.
 
 The project should compile fine on most versions/distros but it is only tested
-and distributed for Ubuntu 18.04 by [Sw/eden](https://www.eossweden.org).
+and distributed for Ubuntu `18.04`, `20.04` and `22.04` by [Sw/eden](https://www.eossweden.org).
 
 #### Dependencies
 
