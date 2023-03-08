@@ -24,6 +24,7 @@
 #ifndef LIBEOSIO_TYPES_H
 #define LIBEOSIO_TYPES_H
 
+#include <iostream>
 #include <array>
 
 namespace libeosio {
@@ -62,5 +63,11 @@ typedef struct { unsigned char data[20]; } ripemd160_t;
 typedef struct { unsigned char data[32]; } sha256_t;
 
 } // namespace libeosio
+
+// Stream operators
+
+std::ostream& operator<<(std::ostream& os, const libeosio::ec_privkey_t& pk);
+
+std::ostream& operator<<(std::ostream& os, const libeosio::ec_pubkey_t& pk);
 
 #endif /* LIBEOSIO_TYPES_H */
