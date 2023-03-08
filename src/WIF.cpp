@@ -31,7 +31,7 @@ namespace libeosio {
 
 #define PRIV_KEY_PREFIX 0x80 /* 0x80 for "Bitcoin mainnet". Always used by EOS. */
 
-std::string wif_priv_encode(ec_privkey_t priv) {
+std::string wif_priv_encode(const ec_privkey_t& priv) {
 
 	checksum_t check;
 	// 1 byte extra for prefix.
@@ -46,7 +46,7 @@ std::string wif_priv_encode(ec_privkey_t priv) {
 	return base58_encode(buf, buf + sizeof(buf));
 }
 
-std::string wif_pub_encode(ec_pubkey_t pub, const std::string& prefix) {
+std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix) {
 
 	checksum_t check = checksum_ripemd160(pub.data(), pub.size());
 	unsigned char buf[EC_PUBKEY_SIZE + CHECKSUM_SIZE];
