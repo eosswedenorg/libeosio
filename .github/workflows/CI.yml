@@ -30,11 +30,15 @@ jobs:
         if [ "$RUNNER_OS" == "macOS" ]; then
             SSL_OPTS="-D OPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1"
         fi
-        cmake ${SSL_OPTS} -B build
+        cmake -DENABLE_TESTING=ON ${SSL_OPTS} -B build
 
     - name: Build
       shell: bash
       run: cmake --build build
+
+    - name: Test
+      shell: bash
+      run: ctest --verbose --test-dir build -C Debug
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1
