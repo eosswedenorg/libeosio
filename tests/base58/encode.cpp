@@ -1,11 +1,12 @@
 #include <libeosio/base58.hpp>
 #include <iostream>
 #include <array>
+#include <doctest.h>
 
 typedef std::pair<std::string, std::string> testpair_t;
 typedef std::array<testpair_t, 3> tests;
 
-int main() {
+TEST_CASE("base58::base58_encode") {
 
 	tests input = {
 		testpair_t("",""),
@@ -20,13 +21,6 @@ int main() {
 	};
 
 	for(tests::const_iterator it = input.begin(); it != input.end(); it++) {
-
-		std::string result = libeosio::base58_encode(it->first);
-
-		if ( result != it->second ) {
-			std::cout << result << " is not equalt to " << it->second << std::endl;
-			return 1;
-		}
+		CHECK( libeosio::base58_encode(it->first) == it->second );
 	}
-	return 0;
 }

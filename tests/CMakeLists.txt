@@ -1,13 +1,17 @@
 
-function(test name)
-	add_executable(${name}_test ${name}.cpp)
-	target_link_libraries(${name}_test PRIVATE ${LIB_NAME})
+set(TEST_SRC
+	main.cpp
 
-	# define tests
-	add_test(
-		NAME ${name}_test
-		COMMAND $<TARGET_FILE:${name}_test>
-	)
-endfunction()
+	# Base58
+	base58/encode.cpp
+	base58/is_base58.cpp
+)
 
-add_subdirectory( base58 )
+add_executable(doctest ${TEST_SRC})
+target_link_libraries(doctest PRIVATE ${LIB_NAME})
+target_include_directories(doctest PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
+
+add_test(
+	NAME doctest
+	COMMAND $<TARGET_FILE:doctest> -ni -fc
+)
