@@ -36,6 +36,13 @@ std::string base58_encode(const std::string& str);
 std::string base58_encode(const std::vector<unsigned char>& vch);
 std::string base58_encode(const unsigned char* pbegin, const unsigned char* pend);
 
+
+/**
+ * Base58 Decoding functions.
+ */
+bool base58_decode(const char* psz, std::string& out);
+bool base58_decode(const std::string& str, std::string& out);
+
 /**
  * Returns true if `ch` is a base58 character, false otherwise.
  */

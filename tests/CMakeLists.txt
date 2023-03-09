@@ -4,6 +4,7 @@ set(TEST_SRC
 
 	# Base58
 	base58/encode.cpp
+	base58/decode.cpp
 	base58/is_base58.cpp
 
 	# WIF
