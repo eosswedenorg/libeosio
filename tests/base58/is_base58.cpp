@@ -1,10 +1,10 @@
 #include <libeosio/base58.hpp>
 #include <iostream>
-#include <array>
+#include <vector>
 #include <doctest.h>
 
 typedef std::pair<std::string, size_t> testpair_t;
-typedef std::array<testpair_t, 6> tests;
+typedef std::vector<testpair_t> tests;
 
 TEST_CASE("base58::is_base58 [string]") {
 	tests input = {
