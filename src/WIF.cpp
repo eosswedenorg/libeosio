@@ -46,6 +46,33 @@ std::string wif_priv_encode(const ec_privkey_t& priv) {
 	return base58_encode(buf, buf + sizeof(buf));
 }
 
+bool wif_priv_decode(ec_privkey_t& priv, const std::string& data) {
+
+	std::vector<unsigned char> buf;
+
+	if (!base58_decode(data, buf)) {
+		return false;
+	}
+
+	if (buf.size() != 1 + EC_PRIVKEY_SIZE + CHECKSUM_SIZE) {
+		return false;
+	}
+
+	// First byte is the prefix
+	if (buf[0] != PRIV_KEY_PREFIX) {
+		return false;
+	}
+
+	// Calculate and validate checksum
+	if (!checksum_validate<checksum_sha256d>(buf.data(), buf.size())) {
+		return false;
+	}
+
+	// Copy data to output
+	memcpy(priv.data(), buf.data() + 1, priv.size());
+	return true;
+}
+
 std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix) {
 
 	checksum_t check = checksum_ripemd160(pub.data(), pub.size());

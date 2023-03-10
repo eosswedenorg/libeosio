@@ -35,6 +35,11 @@ namespace libeosio {
 std::string wif_priv_encode(const ec_privkey_t& priv);
 
 /**
+ * Decode an WIF String to EC private key
+ */
+bool wif_priv_decode(ec_privkey_t& priv, const std::string& data);
+
+/**
  * Encode an EC public key to WIF String.
  */
 std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix = "EOS");

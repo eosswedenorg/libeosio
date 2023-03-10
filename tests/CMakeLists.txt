@@ -9,6 +9,7 @@ set(TEST_SRC
 
 	# WIF
 	WIF/priv_encode.cpp
+	WIF/priv_decode.cpp
 )
 
 add_executable(doctest ${TEST_SRC})
