@@ -108,7 +108,7 @@ std::string base58_encode(const std::vector<unsigned char>& vch) {
     return base58_encode(vch.data(), vch.data() + vch.size());
 }
 
-bool base58_decode(const char* psz, std::string& out) {
+bool base58_decode(const char* psz, std::vector<unsigned char>& out) {
 	// Skip leading spaces.
 	while (*psz && is_space(*psz))
 		psz++;
@@ -160,7 +160,7 @@ bool base58_decode(const char* psz, std::string& out) {
 	return true;
 }
 
-bool base58_decode(const std::string& str, std::string& out) {
+bool base58_decode(const std::string& str, std::vector<unsigned char>& out) {
 	return base58_decode(str.c_str(), out);
 }
 

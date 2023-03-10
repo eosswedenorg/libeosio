@@ -39,10 +39,12 @@ TEST_CASE("base58_decode") {
 	for(tests::const_iterator it = input.begin(); it != input.end(); it++) {
 
 		SUBCASE(it->name.c_str()) {
-			std::string result;
+			std::vector<unsigned char> result;
+
+			std::vector<unsigned char> expectedOut(it->expectedOut.begin(), it->expectedOut.end());
 
 			CHECK( libeosio::base58_decode(it->in, result) == it->expectedReturn );
-			CHECK( result == it->expectedOut );
+			CHECK( result == expectedOut );
 		}
 	}
 }
