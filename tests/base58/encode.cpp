@@ -3,24 +3,32 @@
 #include <vector>
 #include <doctest.h>
 
-typedef std::pair<std::string, std::string> testpair_t;
-typedef std::vector<testpair_t> tests;
-
 TEST_CASE("base58::base58_encode") {
 
-	tests input = {
-		testpair_t("",""),
-		testpair_t(
-			"Quisque ut ipsum lorem. Nullam ac justo elit. Sed gravida convallis mattis.",
-			"2nPTv2DT874jRaYBN4uhM9mT2iRiwdJuCXuX5buUHyyvWUSu6cX62i8HYo8PsWqgs9DHbwhpSpV5SVUnCqyLcpxcuGanH68eXgzZTGq"
-		),
-		testpair_t(
-			"Cras fringilla, eros et imperdiet tincidunt",
-			"5yAgp6rBagDHQZ3GacZSeaEPF2jfuwVHM21aNfXETJgn3EkArxc5UWSq1RM"
-		),
+	struct testcase {
+		const char* name;
+		std::string in;
+		std::string expected;
 	};
 
-	for(tests::const_iterator it = input.begin(); it != input.end(); it++) {
-		CHECK( libeosio::base58_encode(it->first) == it->second );
+	std::vector<struct testcase> tests = {
+		{"empty","",""},
+		{
+			"first",
+			"Quisque ut ipsum lorem. Nullam ac justo elit. Sed gravida convallis mattis.",
+			"2nPTv2DT874jRaYBN4uhM9mT2iRiwdJuCXuX5buUHyyvWUSu6cX62i8HYo8PsWqgs9DHbwhpSpV5SVUnCqyLcpxcuGanH68eXgzZTGq"
+		},
+		{
+			"second",
+			"Cras fringilla, eros et imperdiet tincidunt",
+			"5yAgp6rBagDHQZ3GacZSeaEPF2jfuwVHM21aNfXETJgn3EkArxc5UWSq1RM"
+		},
+	};
+
+	for(auto it = tests.begin(); it != tests.end(); it++) {
+
+		SUBCASE(it->name) {
+			CHECK( libeosio::base58_encode(it->in) == it->expected );
+		}
 	}
 }
