@@ -57,6 +57,12 @@ inline checksum_t checksum(const unsigned char* data, std::size_t len) {
 	return crc;
 }
 
+template <checksum_t (*F)(const unsigned char *, std::size_t)>
+inline bool checksum_validate(const unsigned char* data, std::size_t len) {
+	checksum_t check = F(data, len - CHECKSUM_SIZE);
+	return !memcmp(check.data(), data + (len - CHECKSUM_SIZE), CHECKSUM_SIZE);
+}
+
 /**
  * Checksum implementations.
  */
