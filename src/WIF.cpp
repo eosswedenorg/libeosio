@@ -84,6 +84,28 @@ std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix) {
 	return prefix.substr(0, 3) + base58_encode(buf, buf + sizeof(buf));
 }
 
+bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data, size_t prefix_length) {
+
+	std::vector<unsigned char> buf;
+
+	if (!base58_decode(data.c_str() + prefix_length, buf)) {
+		return false;
+	}
+
+	if (buf.size() != EC_PUBKEY_SIZE + CHECKSUM_SIZE) {
+		return false;
+	}
+
+	// Calculate and validate checksum
+	if (!checksum_validate<checksum_ripemd160>(buf.data(), buf.size())) {
+		return false;
+	}
+
+	// Copy data to output
+	memcpy(pub.data(), buf.data(), pub.size());
+	return true;
+}
+
 void wif_print_key(const struct ec_keypair *key, const std::string& prefix) {
 
 	std::cout << "Public: " << wif_pub_encode(key->pub, prefix) << std::endl;
