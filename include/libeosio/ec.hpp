@@ -24,9 +24,38 @@
 #ifndef LIBEOSIO_EC_H
 #define LIBEOSIO_EC_H
 
-#include <libeosio/types.hpp>
+#include <libeosio/hash.hpp>
+#include <iostream>
+#include <array>
 
 namespace libeosio {
+
+/**
+ * Elliptic curve private key size (in bytes)
+ */
+#define EC_PRIVKEY_SIZE 32
+
+/**
+ * Elliptic curve public key size (in bytes)
+ *
+ * Compressed format: z||x, where byte z specifies which (of the 2) solutions
+ * of the quadratic equation y is. Each cordinate is 32 bytes.
+ */
+#define EC_PUBKEY_SIZE (32 + 1)
+
+/**
+ * Elliptic curve priv/pub key datastructures.
+ */
+typedef std::array<unsigned char, EC_PRIVKEY_SIZE> ec_privkey_t;
+typedef std::array<unsigned char, EC_PUBKEY_SIZE> ec_pubkey_t;
+
+/**
+ * Elliptic curve keypair (public + private)
+ */
+struct ec_keypair {
+	ec_privkey_t secret;
+	ec_pubkey_t pub;
+};
 
 /**
  * Generates a keypair using the secp256k1 curve.
@@ -35,5 +64,12 @@ namespace libeosio {
 int ec_generate_key(struct ec_keypair *pair);
 
 } // namespace libeosio
+
+
+// Stream operators
+
+std::ostream& operator<<(std::ostream& os, const libeosio::ec_privkey_t& pk);
+
+std::ostream& operator<<(std::ostream& os, const libeosio::ec_pubkey_t& pk);
 
 #endif /* LIBEOSIO_EC_H */

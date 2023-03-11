@@ -40,7 +40,7 @@ set( LIB_NAME ${PROJECT_NAME} )
 
 set( LIB_SOURCE
 	src/base58.cpp
-	src/types.cpp
+	src/ec.cpp
 	src/WIF.cpp
 )
 

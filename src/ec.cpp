@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <libeosio/types.hpp>
+#include <libeosio/ec.hpp>
 
 std::ostream& _hex(std::ostream& os, const unsigned char *b, std::size_t sz) {
 	os << "[ " << std::hex;

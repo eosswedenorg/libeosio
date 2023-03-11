@@ -25,9 +25,14 @@
 #define LIBEOSIO_HASH_H
 
 #include <cstdint>
-#include <libeosio/types.hpp>
 
 namespace libeosio {
+
+/**
+ * Hashes
+ */
+typedef struct { unsigned char data[20]; } ripemd160_t;
+typedef struct { unsigned char data[32]; } sha256_t;
 
 /**
  * sha256 hashing function.
