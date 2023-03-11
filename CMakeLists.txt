@@ -60,16 +60,13 @@ endif()
 
 
 target_link_libraries( ${LIB_NAME}
-	INTERFACE
-		${OPENSSL_CRYPTO_LIBRARY}
+	INTERFACE OpenSSL::Crypto
 )
 
 target_include_directories( ${LIB_NAME}
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 		$<INSTALL_INTERFACE:include>
-	PRIVATE
-		${OPENSSL_INCLUDE_DIR}
 )
 
 # --------------------------------
