@@ -24,7 +24,7 @@
 #ifndef LIBEOSIO_HASH_H
 #define LIBEOSIO_HASH_H
 
-#include <cstdint>
+#include <cstddef>
 
 namespace libeosio {
 
