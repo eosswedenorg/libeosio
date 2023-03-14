@@ -73,12 +73,13 @@ target_include_directories( ${LIB_NAME}
 #  Tests
 # --------------------------------
 
-if (ENABLE_TESTING)
+include(CTest)
+
+if (BUILD_TESTING)
 	# enable testing functionality
-	include(CTest)
 	enable_testing()
 	add_subdirectory( tests )
-endif (ENABLE_TESTING)
+endif (BUILD_TESTING)
 
 # --------------------------------
 #  Install
