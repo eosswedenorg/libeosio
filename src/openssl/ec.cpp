@@ -28,13 +28,11 @@
 
 namespace libeosio {
 
-int ec_generate_key(struct ec_keypair *pair) {
+BN_CTX *ctx = NULL;
+EC_KEY *k = NULL;
 
-	int ret = -1;
-	EC_KEY *k;
-	BN_CTX *ctx;
+int ec_init() {
 
-	// Create BIGNUM context.
 	ctx = BN_CTX_new();
 	if (ctx == NULL) {
 		return -1;
@@ -43,12 +41,31 @@ int ec_generate_key(struct ec_keypair *pair) {
 	// Construct curve.
 	k = EC_KEY_new_by_curve_name(NID_secp256k1);
 	if (k == NULL) {
-		goto fail1;
+		BN_CTX_free(ctx);
+		return -1;
 	}
+
+	return 0;
+}
+
+void ec_shutdown() {
+	if (ctx) {
+		BN_CTX_free(ctx);
+		ctx = NULL;
+	}
+
+	if (k) {
+		EC_KEY_free(k);
+		k = NULL;
+	}
+}
+
+
+int ec_generate_key(struct ec_keypair *pair) {
 
 	// Generate new key pair.
 	if (EC_KEY_generate_key(k) != 1)  {
-		goto fail2;
+		return -1;
 	}
 
 	// Copy private key to binary format.
@@ -59,12 +76,7 @@ int ec_generate_key(struct ec_keypair *pair) {
 		EC_KEY_get0_public_key(k), POINT_CONVERSION_COMPRESSED,
 	   	pair->pub.data(), EC_PUBKEY_SIZE, ctx);
 
-	ret = 0;
-fail2:
-	EC_KEY_free(k);
-fail1:
-	BN_CTX_free(ctx);
-	return ret;
+	return 0;
 }
 
 } // namespace libeosio
