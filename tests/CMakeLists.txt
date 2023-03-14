@@ -22,3 +22,7 @@ add_test(
 	NAME doctest
 	COMMAND $<TARGET_FILE:doctest> -ni -fc
 )
+
+if (WITH_BENCHMARK)
+	add_subdirectory( benchmark )
+endif (WITH_BENCHMARK)
