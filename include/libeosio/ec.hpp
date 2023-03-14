@@ -58,10 +58,20 @@ struct ec_keypair {
 };
 
 /**
+ * Initialize the ec library.
+ */
+int ec_init();
+
+/**
  * Generates a keypair using the secp256k1 curve.
  * public key is in compressed format.
  */
 int ec_generate_key(struct ec_keypair *pair);
+
+/**
+ * Shutdown the ec library.
+ */
+void ec_shutdown();
 
 } // namespace libeosio
 
