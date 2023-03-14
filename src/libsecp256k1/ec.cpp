@@ -21,53 +21,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef LIBEOSIO_TYPES_H
-#define LIBEOSIO_TYPES_H
-
-#include <iostream>
-#include <array>
+#include <secp256k1.h>
+#include <secp256k1_ecdh.h>
+#include <libeosio/ec.hpp>
+#include "rng.h"
 
 namespace libeosio {
 
-/**
- * Elliptic curve private key size (in bytes)
- */
-#define EC_PRIVKEY_SIZE 32
+secp256k1_context* ctx;
 
-/**
- * Elliptic curve public key size (in bytes)
- *
- * Compressed format: z||x, where byte z specifies which (of the 2) solutions
- * of the quadratic equation y is. Each cordinate is 32 bytes.
- */
-#define EC_PUBKEY_SIZE (32 + 1)
+int ec_init() {
+	ctx = secp256k1_context_create(SECP256K1_CONTEXT_NONE);
+	return ctx == NULL ? -1 : 0;
+}
 
-/**
- * Elliptic curve priv/pub key datastructures.
- */
-typedef std::array<unsigned char, EC_PRIVKEY_SIZE> ec_privkey_t;
-typedef std::array<unsigned char, EC_PUBKEY_SIZE> ec_pubkey_t;
+void ec_shutdown() {
+	if (ctx) {
+		secp256k1_context_destroy(ctx);
+		ctx = NULL;
+	}
+}
 
-/**
- * Elliptic curve keypair (public + private)
- */
-struct ec_keypair {
-	ec_privkey_t secret;
-	ec_pubkey_t pub;
-};
+int ec_generate_key(struct ec_keypair *pair) {
 
-/**
- * Hashes
- */
-typedef struct { unsigned char data[20]; } ripemd160_t;
-typedef struct { unsigned char data[32]; } sha256_t;
+	int ret = -1;
+	size_t len;
+	secp256k1_pubkey pub;
+	unsigned char seckey[32];
+	unsigned char randomize[32];
+
+	if (!fill_random(randomize, sizeof(randomize))) {
+		return -1;
+	}
+
+	if (secp256k1_context_randomize(ctx, randomize) < 0) {
+		return -1;
+	}
+
+	while (1) {
+		if (!fill_random(pair->secret.data(), pair->secret.size())) {
+			return -1;
+		}
+		if (secp256k1_ec_seckey_verify(ctx, pair->secret.data())) {
+			break;
+		}
+	}
+
+	if (secp256k1_ec_pubkey_create(ctx, &pub, pair->secret.data()) < 0) {
+		return -1;
+	}
+
+	len = EC_PUBKEY_SIZE;
+	secp256k1_ec_pubkey_serialize(ctx, pair->pub.data(), &len, &pub, SECP256K1_EC_COMPRESSED);
+
+	if (len != EC_PUBKEY_SIZE) {
+		return -1;
+	}
+
+	return ret;
+}
 
 } // namespace libeosio
-
-// Stream operators
-
-std::ostream& operator<<(std::ostream& os, const libeosio::ec_privkey_t& pk);
-
-std::ostream& operator<<(std::ostream& os, const libeosio::ec_pubkey_t& pk);
-
-#endif /* LIBEOSIO_TYPES_H */
