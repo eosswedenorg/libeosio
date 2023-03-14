@@ -9,7 +9,7 @@ project(libeosio
 	VERSION 0.1.5
 	DESCRIPTION "C++ library for EOSIO"
 	HOMEPAGE_URL "https://github.com/eosswedenorg/libeosio"
-	LANGUAGES CXX
+	LANGUAGES C CXX
 )
 
 set( PROJECT_MAINTAINER "Henrik Hautakoski <henrik@eossweden.org>")
