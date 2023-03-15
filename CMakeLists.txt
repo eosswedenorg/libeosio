@@ -66,7 +66,7 @@ endif()
 
 
 target_link_libraries( ${LIB_NAME}
-	INTERFACE OpenSSL::Crypto
+	PRIVATE OpenSSL::Crypto
 )
 
 target_include_directories( ${LIB_NAME}
