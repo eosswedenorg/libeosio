@@ -16,7 +16,8 @@ set(TEST_SRC
 	WIF/priv_decode.cpp
 	WIF/pub_encode.cpp
 	WIF/pub_decode.cpp
-)
+	WIF/sig_encode.cpp
+	WIF/sig_decode.cpp)
 
 add_executable(doctest ${TEST_SRC})
 target_link_libraries(doctest PRIVATE ${LIB_NAME})

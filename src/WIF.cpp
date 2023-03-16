@@ -112,4 +112,60 @@ void wif_print_key(const struct ec_keypair *key, const std::string& prefix) {
 	std::cout << "Private: " << wif_priv_encode(key->secret) << std::endl;
 }
 
+// Just to make it "harder" the calculated checksum for a signature
+// has a "K1" suffix that is not present in the WIF encoded string.
+// So this function is a quick hack to calculate it.
+//
+// Should implement and use Init/Update/Finalize hash functions to do it inplace.
+checksum_t _calculate_sig_checksum(const unsigned char *in) {
+	unsigned char buf[EC_SIGNATURE_SIZE + 2];
+
+	memcpy(buf, in, EC_SIGNATURE_SIZE);
+	memcpy(buf + EC_SIGNATURE_SIZE, "K1", 2);
+
+	return checksum_ripemd160(buf, EC_SIGNATURE_SIZE + 2);
+}
+
+bool wif_sig_decode(ec_signature_t& sig, const std::string& data) {
+
+	checksum_t checksum;
+	std::vector<unsigned char> buf;
+
+	if (data.substr(0, 7) != "SIG_K1_") {
+		// Invalid prefix
+		return false;
+	}
+
+	if (!base58_decode(data.c_str() + 7, buf)) {
+		return false;
+	}
+
+	if (buf.size() != EC_SIGNATURE_SIZE + CHECKSUM_SIZE) {
+		return false;
+	}
+
+	// Calculate checksum
+	checksum = _calculate_sig_checksum(buf.data());
+
+	// And validate
+	if (memcmp(buf.data() + EC_SIGNATURE_SIZE, checksum.data(), CHECKSUM_SIZE)) {
+		return false;
+	}
+
+	// Copy data to output
+	memcpy(sig.data(), buf.data(), sig.size());
+	return true;
+}
+
+std::string wif_sig_encode(const ec_signature_t& sig) {
+
+	unsigned char buf[EC_SIGNATURE_SIZE + CHECKSUM_SIZE];
+	checksum_t check = _calculate_sig_checksum(sig.data());
+
+	memcpy(buf, sig.data(), sig.size());
+	memcpy(buf + EC_SIGNATURE_SIZE, check.data(), check.size());
+
+	return "SIG_K1_" + base58_encode(buf, buf + sizeof(buf));
+}
+
 } // namespace libeosio

@@ -54,6 +54,20 @@ bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data, size_t prefix_len
  */
 void wif_print_key(const struct ec_keypair *key, const std::string& prefix = "EOS");
 
+/**
+ * Signatures
+ */
+
+/**
+ * Encode an EC signature to WIF String.
+ */
+std::string wif_sig_encode(const ec_signature_t& sig);
+
+/**
+ * Decode an WIF String to EC signature
+ */
+bool wif_sig_decode(ec_signature_t& sig, const std::string& data);
+
 } // namespace libeosio
 
 #endif /* LIBEOSIO_WIF_H */
