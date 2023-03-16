@@ -26,7 +26,13 @@
 std::ostream& _hex(std::ostream& os, const unsigned char *b, std::size_t sz) {
 	os << "[ " << std::hex;
 	for (int i = 0; i < sz; i++) {
-		os << "0x" << ((int) b[i]) << " ";
+		unsigned int v = b[i];
+
+		os << "0x";
+		if (v <= 0xF) {
+			os << "0";
+		}
+		os << v << " ";
 	}
 	return os << std::oct << "]";
 }
