@@ -57,6 +57,29 @@ struct ec_keypair {
 	ec_pubkey_t pub;
 };
 
+
+/**
+ * Elliptic curve recoverable signature
+ *
+ * The signature consist of 2 integers r,s and v where
+ * r: x cordinate of the random point
+ * s: signature proof
+ * v: recovery id (0, 1, 2 or 3), eg. what EC point is the public key.
+ *
+ * The memory layout is as follows:
+ * r(32), s(32), v(1) = 65 bytes.
+ */
+
+/**
+ * Elliptic curve signature key size (in bytes)
+ */
+#define EC_SIGNATURE_SIZE (32 + 32 + 1)
+
+/**
+ * Elliptic curve signature datastructure.
+ */
+typedef std::array<unsigned char, EC_SIGNATURE_SIZE> ec_signature_t;
+
 /**
  * Initialize the ec library.
  */
