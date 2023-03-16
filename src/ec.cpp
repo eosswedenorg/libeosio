@@ -32,9 +32,10 @@ std::ostream& _hex(std::ostream& os, const unsigned char *b, std::size_t sz) {
 		if (v <= 0xF) {
 			os << "0";
 		}
-		os << v << " ";
+		os << v;
+		if (i < sz-1) os << ", ";
 	}
-	return os << std::oct << "]";
+	return os << std::oct << " ]";
 }
 
 std::ostream& operator<<(std::ostream& os, const libeosio::ec_privkey_t& k) {
