@@ -63,6 +63,16 @@ struct ec_keypair {
 int ec_init();
 
 /**
+ * Generates an new random private key using the secp256k1 curve.
+ */
+int ec_generate_privkey(ec_privkey_t *priv);
+
+/**
+ * Get the public key from an private key.
+ */
+int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub);
+
+/**
  * Generates a keypair using the secp256k1 curve.
  * public key is in compressed format.
  */

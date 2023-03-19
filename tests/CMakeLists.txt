@@ -2,6 +2,9 @@
 set(TEST_SRC
 	main.cpp
 
+	# ec
+	ec/pubkey.cpp
+
 	# Base58
 	base58/encode.cpp
 	base58/decode.cpp
