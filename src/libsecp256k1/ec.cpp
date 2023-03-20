@@ -83,40 +83,11 @@ int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {
 
 int ec_generate_key(struct ec_keypair *pair) {
 
-	size_t len;
-	secp256k1_pubkey pub;
-	unsigned char seckey[32];
-	unsigned char randomize[32];
-
-	if (!fill_random(randomize, sizeof(randomize))) {
+	if (ec_generate_privkey(&pair->secret) < 0) {
 		return -1;
 	}
 
-	if (secp256k1_context_randomize(ctx, randomize) < 0) {
-		return -1;
-	}
-
-	while (1) {
-		if (!fill_random(pair->secret.data(), pair->secret.size())) {
-			return -1;
-		}
-		if (secp256k1_ec_seckey_verify(ctx, pair->secret.data())) {
-			break;
-		}
-	}
-
-	if (secp256k1_ec_pubkey_create(ctx, &pub, pair->secret.data()) < 0) {
-		return -1;
-	}
-
-	len = EC_PUBKEY_SIZE;
-	secp256k1_ec_pubkey_serialize(ctx, pair->pub.data(), &len, &pub, SECP256K1_EC_COMPRESSED);
-
-	if (len != EC_PUBKEY_SIZE) {
-		return -1;
-	}
-
-	return 0;
+	return ec_get_publickey(&pair->secret, &pair->pub);
 }
 
 } // namespace libeosio
