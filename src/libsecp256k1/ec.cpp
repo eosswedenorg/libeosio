@@ -42,6 +42,45 @@ void ec_shutdown() {
 	}
 }
 
+int ec_generate_privkey(ec_privkey_t *priv) {
+
+	unsigned char randomize[32];
+
+	if (!fill_random(randomize, sizeof(randomize))) {
+		return -1;
+	}
+
+	if (secp256k1_context_randomize(ctx, randomize) < 0) {
+		return -1;
+	}
+
+	while (1) {
+		if (!fill_random(priv->data(), priv->size())) {
+			return -1;
+		}
+		if (secp256k1_ec_seckey_verify(ctx, priv->data())) {
+			break;
+		}
+	}
+
+	return 0;
+}
+
+int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {
+
+	size_t len;
+	secp256k1_pubkey ec_pub;
+
+	if (secp256k1_ec_pubkey_create(ctx, &ec_pub, priv->data()) < 0) {
+		return -1;
+	}
+
+	len = EC_PUBKEY_SIZE;
+	secp256k1_ec_pubkey_serialize(ctx, pub->data(), &len, &ec_pub, SECP256K1_EC_COMPRESSED);
+
+	return len != EC_PUBKEY_SIZE ? -1 : 0;
+}
+
 int ec_generate_key(struct ec_keypair *pair) {
 
 	size_t len;
