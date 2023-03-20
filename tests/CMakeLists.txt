@@ -3,6 +3,7 @@ set(TEST_SRC
 	main.cpp
 
 	# ec
+	ec/generate.cpp
 	ec/pubkey.cpp
 
 	# Base58
