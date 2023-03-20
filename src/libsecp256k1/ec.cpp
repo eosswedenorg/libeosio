@@ -44,7 +44,6 @@ void ec_shutdown() {
 
 int ec_generate_key(struct ec_keypair *pair) {
 
-	int ret = -1;
 	size_t len;
 	secp256k1_pubkey pub;
 	unsigned char seckey[32];
@@ -78,7 +77,7 @@ int ec_generate_key(struct ec_keypair *pair) {
 		return -1;
 	}
 
-	return ret;
+	return 0;
 }
 
 } // namespace libeosio
