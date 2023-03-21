@@ -89,5 +89,30 @@ int ecdsa_verify(const sha256_t* digest, const ec_signature_t& sig, const ec_pub
 	return secp256k1_ecdsa_verify(ctx, &ec_sig, digest->data, &pubkey) > 0 ? 0 : -1;
 }
 
+int ecdsa_recover(const sha256_t* digest, const ec_signature_t& sig, ec_pubkey_t& pubkey) {
+
+	secp256k1_pubkey ec_pubkey;
+	secp256k1_ecdsa_recoverable_signature ec_sig;
+	size_t len = EC_PUBKEY_SIZE;
+	int recid;
+
+	recid = sig.at(0) - 27 - 4;
+
+	// Parse signature
+	if (!secp256k1_ecdsa_recoverable_signature_parse_compact(ctx, &ec_sig, sig.data() + 1, recid)) {
+		std::cout << "parse sig" << std::endl;
+		return -1;
+	}
+
+
+	// Recover public key
+	if (!secp256k1_ecdsa_recover(ctx, &ec_pubkey, &ec_sig, digest->data)) {
+		return -1;
+	}
+
+	secp256k1_ec_pubkey_serialize(ctx, pubkey.data(), &len, &ec_pubkey, SECP256K1_EC_COMPRESSED);
+
+	return len != EC_PUBKEY_SIZE ? -1 : 0;
+}
 
 } // namespace libeosio
