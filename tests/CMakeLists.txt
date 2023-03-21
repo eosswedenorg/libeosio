@@ -6,6 +6,7 @@ set(TEST_SRC
 	ec/generate.cpp
 	ec/pubkey.cpp
 	ec/ecdsa_sign.cpp
+	ec/ecdsa_recover.cpp
 	ec/ecdsa_verify.cpp
 
 	# Base58

@@ -118,6 +118,12 @@ int ecdsa_sign(const ec_privkey_t& key, const sha256_t* digest, ec_signature_t& 
 int ecdsa_verify(const sha256_t* digest, const ec_signature_t& sig, const ec_pubkey_t& key);
 
 /**
+ * Recover the public key from the signature.
+ * returns zero if the public key could be extracted. -1 if an error occured.
+ */
+int ecdsa_recover(const sha256_t* digest, const ec_signature_t& sig, ec_pubkey_t& key);
+
+/**
  * Shutdown the ec library.
  */
 void ec_shutdown();
