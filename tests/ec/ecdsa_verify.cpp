@@ -3,7 +3,7 @@
 #include <vector>
 #include <doctest.h>
 
-TEST_CASE("ec::ecdsa_sign") {
+TEST_CASE("ec::ecdsa_verify") {
 
 	struct testcase {
 		const char *name;
