@@ -66,7 +66,11 @@ if (${EC_LIB} STREQUAL "libsecp256k1")
 	# Note: this is a big hack to get cmake to not export this library.
 	# Must be a better way, but works so cba.
 	LIST(APPEND LIB_PRIVATE_INCLUDE $<BUILD_INTERFACE:$<TARGET_PROPERTY:secp256k1,INCLUDE_DIRECTORIES>>)
-	LIST(APPEND LIB_SOURCE src/libsecp256k1/ec.cpp $<TARGET_OBJECTS:secp256k1>)
+	LIST(APPEND LIB_SOURCE
+		$<TARGET_OBJECTS:secp256k1>
+		src/libsecp256k1/ec.cpp
+		src/libsecp256k1/ecdsa.cpp
+	)
 
 elseif (${EC_LIB} STREQUAL "openssl")
 	LIST(APPEND LIB_SOURCE
