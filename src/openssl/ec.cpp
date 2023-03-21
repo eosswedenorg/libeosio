@@ -110,10 +110,6 @@ int calculate_pubkey(EC_KEY *ec_key, ec_pubkey_t *pub) {
 
 int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {
 
-	const BIGNUM* n;
-	const EC_GROUP *group;
-	EC_POINT *point;
-
 	// Load private key
 	if (EC_KEY_oct2priv(k, priv->data(), EC_PRIVKEY_SIZE) == 0) {
 		return -1;
