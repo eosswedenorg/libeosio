@@ -24,6 +24,7 @@
 
 #include <openssl/ec.h>
 #include <openssl/bn.h>
+#include <string.h>
 
 // Calcualte a public key from a EC_KEY object.
 int calculate_pubkey(const EC_GROUP *group, const EC_KEY *ec_key, EC_POINT **point) {
@@ -41,4 +42,60 @@ int calculate_pubkey(const EC_GROUP *group, const EC_KEY *ec_key, EC_POINT **poi
 
 	// Multiply curve (group) and private key to get the public key.
 	return EC_POINT_mul(group, *point, pk, NULL, NULL, NULL);
+}
+
+int ECDSA_SIG_unserialize_rs(const unsigned char *sig, BIGNUM **r, BIGNUM **s, int *recid) {
+
+	*recid = sig[0] - 27 - 4;
+
+	if ((*r = BN_bin2bn(sig + 1, 32, NULL)) == NULL) {
+		return 0;
+	}
+
+	if ((*s = BN_bin2bn(sig + 33, 32, NULL)) == NULL) {
+		BN_free(*r);
+		return 0;
+	}
+	return 1;
+}
+
+int ECDSA_SIG_unserialize(const unsigned char *sig, ECDSA_SIG *ecdsa_sig, int *recid) {
+
+	BIGNUM *r, *s;
+
+	if (ECDSA_SIG_unserialize_rs(sig, &r, &s, recid) == 0) {
+		return 0;
+	}
+
+	if (ECDSA_SIG_set0(ecdsa_sig, r, s) == 0) {
+		BN_free(r);
+		BN_free(s);
+		return 0;
+	}
+
+	// r,s pointers are owned by ECDSA_SIG from this point.
+	// So we should not free them.
+	return 1;
+}
+
+int ECDSA_SIG_serialize(const ECDSA_SIG *ecdsa_sig, int recid, unsigned char* sig) {
+
+	unsigned char* der = NULL;
+	int bytes, ret = -1;
+	unsigned char lR, lS;
+
+	bytes = i2d_ECDSA_SIG( ecdsa_sig, &der );
+	lR = der[3];
+	lS = der[5+lR];
+
+	if (lR != 32 || lS != 32) goto err;
+
+	memcpy(sig + 1, &der[4], 32);
+	memcpy(sig + 33, &der[6+32], 32);
+	sig[0] = recid + 27 + 4;
+
+	ret = 0;
+err:
+	free(der);
+	return ret;
 }
