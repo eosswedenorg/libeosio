@@ -78,16 +78,8 @@ int ec_generate_privkey(ec_privkey_t *priv) {
 }
 
 // Calcualte a public key from a EC_KEY object.
-int calculate_pubkey(EC_KEY *ec_key, ec_pubkey_t *pub) {
+int calculate_pubkey(const EC_GROUP *group, const EC_KEY *ec_key, EC_POINT **point) {
 	const BIGNUM* pk;
-	const EC_GROUP *group;
-	EC_POINT *point;
-	int rc;
-
-	// Get the curve (group) number first.
-	if ((group = EC_KEY_get0_group(ec_key)) == NULL) {
-		return 0;
-	}
 
 	// Then get the private key number
 	if ((pk = EC_KEY_get0_private_key(ec_key)) == NULL) {
@@ -95,29 +87,40 @@ int calculate_pubkey(EC_KEY *ec_key, ec_pubkey_t *pub) {
 	}
 
 	// Create a new point.
-	if ((point = EC_POINT_new(group)) == NULL) {
+	if ((*point = EC_POINT_new(group)) == NULL) {
 		return 0;
 	}
 
 	// Multiply curve (group) and private key to get the public key.
-	rc = EC_POINT_mul(group, point, pk, NULL, NULL, ctx);
-	if (rc != 0) {
-		// Encode public key
-		rc = EC_POINT_encode(group, point, pub->data(), EC_PUBKEY_SIZE, ctx);
-	}
-
-	EC_POINT_free(point);
-	return rc;
+	return EC_POINT_mul(group, *point, pk, NULL, NULL, NULL);
 }
 
 int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {
+
+	int rc = -1;
+	const EC_GROUP *group;
+	EC_POINT *point;
 
 	// Load private key
 	if (EC_KEY_oct2priv(k, priv->data(), EC_PRIVKEY_SIZE) == 0) {
 		return -1;
 	}
 
-	return calculate_pubkey(k, pub) == 0 ? -1 : 0;
+	if ((group = EC_KEY_get0_group(k)) == NULL) {
+		return -1;
+	}
+
+	if (calculate_pubkey(group, k, &point) == 0) {
+		return -1;
+	}
+
+	// Encode public key
+	if (EC_POINT_encode(group, point, pub->data(), EC_PUBKEY_SIZE, ctx) != 0) {
+		rc = 0;
+	}
+
+	EC_POINT_free(point);
+	return rc;
 }
 
 int ec_generate_key(struct ec_keypair *pair) {
