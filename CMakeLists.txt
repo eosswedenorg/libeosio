@@ -49,7 +49,7 @@ set(EC_LIB "libsecp256k1" CACHE STRING "What elliptic curve implementation to us
 
 set( LIB_NAME ${PROJECT_NAME} )
 
-set( LIB_SOURCE
+add_library( ${LIB_NAME} STATIC
 	src/base58.cpp
 	src/ec.cpp
 	src/WIF.cpp
@@ -57,23 +57,37 @@ set( LIB_SOURCE
 	src/openssl/hash.cpp
 )
 
+target_include_directories( ${LIB_NAME}
+	PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+		$<INSTALL_INTERFACE:include>
+)
+
+# Skip prefix on unix.
+if (UNIX)
+	set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
+endif()
+
 # OpenSSL
 include(OpenSSL)
+target_link_libraries( ${LIB_NAME} PRIVATE OpenSSL::Crypto)
 
 # EC Implementation
 if (${EC_LIB} STREQUAL "libsecp256k1")
 	add_subdirectory( vendor/secp256k1 )
 	# Note: this is a big hack to get cmake to not export this library.
 	# Must be a better way, but works so cba.
-	LIST(APPEND LIB_PRIVATE_INCLUDE $<BUILD_INTERFACE:$<TARGET_PROPERTY:secp256k1,INCLUDE_DIRECTORIES>>)
-	LIST(APPEND LIB_SOURCE
+	target_include_directories( ${LIB_NAME}
+		PRIVATE $<BUILD_INTERFACE:$<TARGET_PROPERTY:secp256k1,INCLUDE_DIRECTORIES>>
+	)
+	target_sources( ${LIB_NAME} PRIVATE
 		$<TARGET_OBJECTS:secp256k1>
 		src/libsecp256k1/ec.cpp
 		src/libsecp256k1/ecdsa.cpp
 	)
 
 elseif (${EC_LIB} STREQUAL "openssl")
-	LIST(APPEND LIB_SOURCE
+	target_sources( ${LIB_NAME} PRIVATE
 		src/openssl/ec.cpp
 		src/openssl/ecdsa.cpp
 		src/openssl/helpers.c
@@ -82,25 +96,6 @@ elseif (${EC_LIB} STREQUAL "openssl")
 else()
 	message(FATAL_ERROR "Invalid ec implementation: " ${EC_LIB})
 endif()
-
-add_library( ${LIB_NAME} STATIC ${LIB_SOURCE} )
-
-# Skip prefix on unix.
-if (UNIX)
-	set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
-endif()
-
-
-target_link_libraries( ${LIB_NAME}
-	PRIVATE OpenSSL::Crypto
-)
-
-target_include_directories( ${LIB_NAME}
-	PRIVATE ${LIB_PRIVATE_INCLUDE}
-	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-		$<INSTALL_INTERFACE:include>
-)
 
 # --------------------------------
 #  Tests
