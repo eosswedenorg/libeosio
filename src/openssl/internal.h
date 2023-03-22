@@ -40,6 +40,24 @@ int calculate_pubkey(const EC_GROUP *group, const EC_KEY *ec_key, EC_POINT **poi
 
 int ECDSA_SIG_recover_key_GFp(EC_KEY *eckey, const BIGNUM* r, const BIGNUM* s, const unsigned char *msg, int msglen, int recid, int check);
 
+/**
+ * Signature serialization function.
+ * sig must be a pointer to a serialized signature and be atleast 65 (32s + 32 + 1) bytes long.
+ *
+ * returns -1 if there was an error. zero otherwise.
+ */
+int ECDSA_SIG_serialize(const ECDSA_SIG *ecdsa_sig, int recid, unsigned char* sig);
+
+/**
+ * Signature unserialization functions.
+ * sig must be a pointer to a serialized signature and be atleast 65 (32s + 32 + 1) bytes long.
+ *
+ * returns -1 if there was an error. zero otherwise.
+ */
+int ECDSA_SIG_unserialize(const unsigned char *sig, ECDSA_SIG *ecdsa_sig, int *recid);
+
+int ECDSA_SIG_unserialize_rs(const unsigned char *sig, BIGNUM **r, BIGNUM **s, int *recid);
+
 #ifdef __cplusplus
 }
 #endif
