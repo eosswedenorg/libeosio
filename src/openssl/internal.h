@@ -35,6 +35,8 @@ extern "C" {
 
 int calculate_pubkey(const EC_GROUP *group, const EC_KEY *ec_key, EC_POINT **point);
 
+int ECDSA_SIG_recover_key_GFp(EC_KEY *eckey, const BIGNUM* r, const BIGNUM* s, const unsigned char *msg, int msglen, int recid, int check);
+
 #ifdef __cplusplus
 }
 #endif
