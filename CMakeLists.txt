@@ -86,6 +86,12 @@ if (${EC_LIB} STREQUAL "libsecp256k1")
 		src/libsecp256k1/ecdsa.cpp
 	)
 
+	# Need to link to bcrypt on windows as BCryptGenRandom is
+	# used by fill_random in src/libsecp256k1/rng.h
+	if (WIN32)
+		target_link_libraries( ${LIB_NAME} PRIVATE "bcrypt.lib" )
+	endif (WIN32)
+
 elseif (${EC_LIB} STREQUAL "openssl")
 	target_sources( ${LIB_NAME} PRIVATE
 		src/openssl/ec.cpp
