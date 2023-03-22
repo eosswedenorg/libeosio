@@ -97,6 +97,8 @@ else()
 	message(FATAL_ERROR "Invalid ec implementation: " ${EC_LIB})
 endif()
 
+message("-- Using Elliptic curve library: ${EC_LIB}")
+
 # --------------------------------
 #  Tests
 # --------------------------------
