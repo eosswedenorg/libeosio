@@ -22,9 +22,12 @@
  * SOFTWARE.
  */
 #include <openssl/ec.h>
+#include <openssl/hmac.h>
 
 #ifndef LIBEOSIO_OPENSSL_INTERNAL_H
 #define LIBEOSIO_OPENSSL_INTERNAL_H
+
+#define EC_KEY_new_secp256k1() (EC_KEY_new_by_curve_name( NID_secp256k1 ))
 
 #define EC_POINT_encode(group, point, buf, len, ctx) \
 	EC_POINT_point2oct((group), (point), POINT_CONVERSION_COMPRESSED, (buf), (len), (ctx))
