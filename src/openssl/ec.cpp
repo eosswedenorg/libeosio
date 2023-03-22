@@ -25,11 +25,9 @@
 #include <openssl/bn.h>
 #include <openssl/hmac.h>
 #include <libeosio/ec.hpp>
+#include "internal.h"
 
 namespace libeosio {
-
-#define EC_POINT_encode(group, point, buf, len, ctx) \
-	EC_POINT_point2oct((group), (point), POINT_CONVERSION_COMPRESSED, (buf), (len), (ctx))
 
 BN_CTX *ctx = NULL;
 EC_KEY *k = NULL;
@@ -75,24 +73,6 @@ int ec_generate_privkey(ec_privkey_t *priv) {
 	}
 
 	return 0;
-}
-
-// Calcualte a public key from a EC_KEY object.
-int calculate_pubkey(const EC_GROUP *group, const EC_KEY *ec_key, EC_POINT **point) {
-	const BIGNUM* pk;
-
-	// Then get the private key number
-	if ((pk = EC_KEY_get0_private_key(ec_key)) == NULL) {
-		return 0;
-	}
-
-	// Create a new point.
-	if ((*point = EC_POINT_new(group)) == NULL) {
-		return 0;
-	}
-
-	// Multiply curve (group) and private key to get the public key.
-	return EC_POINT_mul(group, *point, pk, NULL, NULL, NULL);
 }
 
 int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {

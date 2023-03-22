@@ -55,6 +55,7 @@ include(OpenSSL)
 set (LIB_SOURCE ${LIB_SOURCE}
 	src/openssl/ec.cpp
 	src/openssl/hash.cpp
+	src/openssl/helpers.c
 )
 
 add_library( ${LIB_NAME} STATIC ${LIB_SOURCE} )
