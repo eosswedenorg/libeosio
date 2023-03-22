@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.15)
 
 # Project name and version
 project(libeosio
-	VERSION 0.1.5
+	VERSION 0.1.6
 	DESCRIPTION "C++ library for EOSIO"
 	HOMEPAGE_URL "https://github.com/eosswedenorg/libeosio"
 	LANGUAGES C CXX
