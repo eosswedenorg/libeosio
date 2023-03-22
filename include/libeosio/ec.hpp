@@ -101,6 +101,28 @@ int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub);
  */
 int ec_generate_key(struct ec_keypair *pair);
 
+
+/**
+ * Sign
+ */
+
+/**
+ * Create a ECDSA signature, returns -1 if an error occured or zero on success.
+ */
+int ecdsa_sign(const ec_privkey_t& key, const sha256_t* digest, ec_signature_t& sig);
+
+/**
+ * Verify an ECDSA signature,
+ * returns zero if the signature is correct. -1 if the signature is incorrect or an error occured.
+ */
+int ecdsa_verify(const sha256_t* digest, const ec_signature_t& sig, const ec_pubkey_t& key);
+
+/**
+ * Recover the public key from the signature.
+ * returns zero if the public key could be extracted. -1 if an error occured.
+ */
+int ecdsa_recover(const sha256_t* digest, const ec_signature_t& sig, ec_pubkey_t& key);
+
 /**
  * Shutdown the ec library.
  */

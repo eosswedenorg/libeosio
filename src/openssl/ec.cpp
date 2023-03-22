@@ -25,6 +25,7 @@
 #include <openssl/bn.h>
 #include <openssl/hmac.h>
 #include <libeosio/ec.hpp>
+#include "internal.h"
 
 namespace libeosio {
 
@@ -74,43 +75,9 @@ int ec_generate_privkey(ec_privkey_t *priv) {
 	return 0;
 }
 
-// Calcualte a public key from a EC_KEY object.
-int calculate_pubkey(EC_KEY *ec_key, ec_pubkey_t *pub) {
-	const BIGNUM* pk;
-	const EC_GROUP *group;
-	EC_POINT *point;
-	int rc;
-
-	// Get the curve (group) number first.
-	if ((group = EC_KEY_get0_group(ec_key)) == NULL) {
-		return 0;
-	}
-
-	// Then get the private key number
-	if ((pk = EC_KEY_get0_private_key(ec_key)) == NULL) {
-		return 0;
-	}
-
-	// Create a new point.
-	if ((point = EC_POINT_new(group)) == NULL) {
-		return 0;
-	}
-
-	// Multiply curve (group) and private key to get the public key.
-	rc = EC_POINT_mul(group, point, pk, NULL, NULL, ctx);
-	if (rc != 0) {
-		// Encode public key
-		rc = EC_POINT_point2oct(group, point, POINT_CONVERSION_COMPRESSED,
-	   		pub->data(), EC_PUBKEY_SIZE, ctx);
-	}
-
-	EC_POINT_free(point);
-	return rc;
-}
-
 int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {
 
-	const BIGNUM* n;
+	int rc = -1;
 	const EC_GROUP *group;
 	EC_POINT *point;
 
@@ -119,7 +86,21 @@ int ec_get_publickey(const ec_privkey_t *priv, ec_pubkey_t* pub) {
 		return -1;
 	}
 
-	return calculate_pubkey(k, pub) == 0 ? -1 : 0;
+	if ((group = EC_KEY_get0_group(k)) == NULL) {
+		return -1;
+	}
+
+	if (calculate_pubkey(group, k, &point) == 0) {
+		return -1;
+	}
+
+	// Encode public key
+	if (EC_POINT_encode(group, point, pub->data(), EC_PUBKEY_SIZE, ctx) != 0) {
+		rc = 0;
+	}
+
+	EC_POINT_free(point);
+	return rc;
 }
 
 int ec_generate_key(struct ec_keypair *pair) {
