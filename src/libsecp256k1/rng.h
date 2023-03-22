@@ -16,8 +16,13 @@
  * Windows -> `BCryptGenRandom`(`bcrypt.h`). https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
  */
 #if defined(_WIN32)
+/* Windows throws a bunch of "redefinition" warnings for these headers.
+   So we disable them temporarily */
+#pragma warning( push )
+#pragma warning( disable: 4005 )
 #include <windows.h>
 #include <ntstatus.h>
+#pragma warning( pop )
 #include <bcrypt.h>
 #elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
 #include <sys/random.h>
