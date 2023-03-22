@@ -28,6 +28,9 @@
 
 namespace libeosio {
 
+#define EC_POINT_encode(group, point, buf, len, ctx) \
+	EC_POINT_point2oct((group), (point), POINT_CONVERSION_COMPRESSED, (buf), (len), (ctx))
+
 BN_CTX *ctx = NULL;
 EC_KEY *k = NULL;
 
@@ -100,8 +103,7 @@ int calculate_pubkey(EC_KEY *ec_key, ec_pubkey_t *pub) {
 	rc = EC_POINT_mul(group, point, pk, NULL, NULL, ctx);
 	if (rc != 0) {
 		// Encode public key
-		rc = EC_POINT_point2oct(group, point, POINT_CONVERSION_COMPRESSED,
-	   		pub->data(), EC_PUBKEY_SIZE, ctx);
+		rc = EC_POINT_encode(group, point, pub->data(), EC_PUBKEY_SIZE, ctx);
 	}
 
 	EC_POINT_free(point);
