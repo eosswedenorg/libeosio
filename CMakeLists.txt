@@ -39,6 +39,11 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 add_compile_options(-D OPENSSL_API_COMPAT=0x10100000L)
 
 # --------------------------------
+#  Options
+# --------------------------------
+set(EC_LIB "libsecp256k1" CACHE STRING "What elliptic curve implementation to use")
+
+# --------------------------------
 #  Library
 # --------------------------------
 
@@ -48,17 +53,35 @@ set( LIB_SOURCE
 	src/base58.cpp
 	src/ec.cpp
 	src/WIF.cpp
+
+	src/openssl/hash.cpp
 )
 
 # OpenSSL
 include(OpenSSL)
-set (LIB_SOURCE ${LIB_SOURCE}
-	src/openssl/ec.cpp
-	src/openssl/ecdsa.cpp
-	src/openssl/hash.cpp
-	src/openssl/helpers.c
-	src/openssl/recovery.c
-)
+
+# EC Implementation
+if (${EC_LIB} STREQUAL "libsecp256k1")
+	add_subdirectory( vendor/secp256k1 )
+	# Note: this is a big hack to get cmake to not export this library.
+	# Must be a better way, but works so cba.
+	LIST(APPEND LIB_PRIVATE_INCLUDE $<BUILD_INTERFACE:$<TARGET_PROPERTY:secp256k1,INCLUDE_DIRECTORIES>>)
+	LIST(APPEND LIB_SOURCE
+		$<TARGET_OBJECTS:secp256k1>
+		src/libsecp256k1/ec.cpp
+		src/libsecp256k1/ecdsa.cpp
+	)
+
+elseif (${EC_LIB} STREQUAL "openssl")
+	LIST(APPEND LIB_SOURCE
+		src/openssl/ec.cpp
+		src/openssl/ecdsa.cpp
+		src/openssl/helpers.c
+		src/openssl/recovery.c
+	)
+else()
+	message(FATAL_ERROR "Invalid ec implementation: " ${EC_LIB})
+endif()
 
 add_library( ${LIB_NAME} STATIC ${LIB_SOURCE} )
 
@@ -73,6 +96,7 @@ target_link_libraries( ${LIB_NAME}
 )
 
 target_include_directories( ${LIB_NAME}
+	PRIVATE ${LIB_PRIVATE_INCLUDE}
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 		$<INSTALL_INTERFACE:include>
