@@ -24,4 +24,5 @@ find_package(OpenSSL 1.1 REQUIRED)
 # Bug in FindOpenSSL. Win needs to link to these if static libs are used.
 if (WIN32 AND OPENSSL_USE_STATIC_LIBS)
 	set (OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIBRARY};Crypt32;ws2_32")
+	target_link_libraries(OpenSSL::Crypto INTERFACE "Crypt32;ws2_32")
 endif()
