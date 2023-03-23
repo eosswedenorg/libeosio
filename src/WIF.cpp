@@ -31,18 +31,18 @@ namespace libeosio {
 
 #define PRIV_KEY_PREFIX 0x80 /* 0x80 for "Bitcoin mainnet". Always used by EOS. */
 
-// Just to make it "harder" the calculated checksum for a signature
-// has a "K1" suffix that is not present in the WIF encoded string.
+// Just to make it "harder" the calculated checksum for a signature (k1) and pub/priv keys in k1/r1 format.
+// has a suffix that is not present in the WIF encoded string.
 // So this function is a quick hack to calculate it.
 //
 // Should implement and use Init/Update/Finalize hash functions to do it inplace.
-checksum_t _calculate_sig_checksum(const unsigned char *in) {
-	unsigned char buf[EC_SIGNATURE_SIZE + 2];
+checksum_t _checksum_suffix(const unsigned char *in, size_t size, const char *suffix) {
+	unsigned char buf[size + 2];
 
-	memcpy(buf, in, EC_SIGNATURE_SIZE);
-	memcpy(buf + EC_SIGNATURE_SIZE, "K1", 2);
+	memcpy(buf, in, size);
+	memcpy(buf + size, suffix, 2);
 
-	return checksum_ripemd160(buf, EC_SIGNATURE_SIZE + 2);
+	return checksum_ripemd160(buf, size + 2);
 }
 
 std::string wif_priv_encode(const ec_privkey_t& priv) {
@@ -89,20 +89,42 @@ bool wif_priv_decode(ec_privkey_t& priv, const std::string& data) {
 
 std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix) {
 
-	checksum_t check = checksum_ripemd160(pub.data(), pub.size());
+	checksum_t check;
 	unsigned char buf[EC_PUBKEY_SIZE + CHECKSUM_SIZE];
 
 	memcpy(buf, pub.data(), pub.size());
+
+
+	if (prefix == WIF_PUB_K1) {
+		check = _checksum_suffix(buf, EC_PUBKEY_SIZE, "K1");
+	}
+	// Legacy
+	else {
+		check = checksum_ripemd160(pub.data(), pub.size());
+	}
+
 	memcpy(buf + EC_PUBKEY_SIZE, check.data(), check.size());
 
-	return prefix.substr(0, 3) + base58_encode(buf, buf + sizeof(buf));
+	return prefix + base58_encode(buf, buf + sizeof(buf));
 }
 
-bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data, size_t prefix_length) {
+bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data) {
 
+	const char *suffix;
+	int offset;
 	std::vector<unsigned char> buf;
 
-	if (!base58_decode(data.c_str() + prefix_length, buf)) {
+	// Check prefix
+	if (data.substr(0, WIF_PUB_K1.size()) == WIF_PUB_K1) {
+		suffix = "K1";
+		offset = WIF_PUB_K1.size();
+	} else {
+		// Legacy
+		suffix = "";
+		offset = 3;
+	}
+
+	if (!base58_decode(data.c_str() + offset, buf)) {
 		return false;
 	}
 
@@ -110,8 +132,12 @@ bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data, size_t prefix_len
 		return false;
 	}
 
-	// Calculate and validate checksum
-	if (!checksum_validate<checksum_ripemd160>(buf.data(), buf.size())) {
+	if (suffix[0] != '\0') {
+		checksum_t check = _checksum_suffix(buf.data(), EC_PUBKEY_SIZE, suffix);
+		if (memcmp(buf.data() + EC_PUBKEY_SIZE, check.data(), CHECKSUM_SIZE)) {
+			return false;
+		}
+	} else if (!checksum_validate<checksum_ripemd160>(buf.data(), buf.size())) {
 		return false;
 	}
 
@@ -145,7 +171,7 @@ bool wif_sig_decode(ec_signature_t& sig, const std::string& data) {
 	}
 
 	// Calculate checksum
-	checksum = _calculate_sig_checksum(buf.data());
+	checksum = _checksum_suffix(buf.data(), EC_SIGNATURE_SIZE, "K1");
 
 	// And validate
 	if (memcmp(buf.data() + EC_SIGNATURE_SIZE, checksum.data(), CHECKSUM_SIZE)) {
@@ -160,7 +186,7 @@ bool wif_sig_decode(ec_signature_t& sig, const std::string& data) {
 std::string wif_sig_encode(const ec_signature_t& sig) {
 
 	unsigned char buf[EC_SIGNATURE_SIZE + CHECKSUM_SIZE];
-	checksum_t check = _calculate_sig_checksum(sig.data());
+	checksum_t check = _checksum_suffix(sig.data(), EC_SIGNATURE_SIZE, "K1");
 
 	memcpy(buf, sig.data(), sig.size());
 	memcpy(buf + EC_SIGNATURE_SIZE, check.data(), check.size());

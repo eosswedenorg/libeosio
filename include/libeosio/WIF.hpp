@@ -50,17 +50,17 @@ bool wif_priv_decode(ec_privkey_t& priv, const std::string& data);
 /**
  * Encode an EC public key to WIF String.
  */
-std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix = "EOS");
+std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix = WIF_PUB_LEG);
 
 /**
  * Decode an WIF String to EC public key
  */
-bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data, size_t prefix_length = 3);
+bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data);
 
 /**
  * Prints an EC keypair in WIF format to standard out.
  */
-void wif_print_key(const struct ec_keypair *key, const std::string& prefix = "EOS");
+void wif_print_key(const struct ec_keypair *key, const std::string& prefix = WIF_PUB_LEG);
 
 /**
  * Signatures
