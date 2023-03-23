@@ -4,7 +4,7 @@
 #include <vector>
 #include <doctest.h>
 
-TEST_CASE("WIF::wif_pub_encode") {
+TEST_CASE("WIF::wif_pub_decode [legacy]") {
 	struct testcase {
 		const char* name;
 		std::string key;
