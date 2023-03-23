@@ -31,6 +31,20 @@ namespace libeosio {
 
 #define PRIV_KEY_PREFIX 0x80 /* 0x80 for "Bitcoin mainnet". Always used by EOS. */
 
+// Just to make it "harder" the calculated checksum for a signature
+// has a "K1" suffix that is not present in the WIF encoded string.
+// So this function is a quick hack to calculate it.
+//
+// Should implement and use Init/Update/Finalize hash functions to do it inplace.
+checksum_t _calculate_sig_checksum(const unsigned char *in) {
+	unsigned char buf[EC_SIGNATURE_SIZE + 2];
+
+	memcpy(buf, in, EC_SIGNATURE_SIZE);
+	memcpy(buf + EC_SIGNATURE_SIZE, "K1", 2);
+
+	return checksum_ripemd160(buf, EC_SIGNATURE_SIZE + 2);
+}
+
 std::string wif_priv_encode(const ec_privkey_t& priv) {
 
 	checksum_t check;
@@ -110,20 +124,6 @@ void wif_print_key(const struct ec_keypair *key, const std::string& prefix) {
 
 	std::cout << "Public: " << wif_pub_encode(key->pub, prefix) << std::endl;
 	std::cout << "Private: " << wif_priv_encode(key->secret) << std::endl;
-}
-
-// Just to make it "harder" the calculated checksum for a signature
-// has a "K1" suffix that is not present in the WIF encoded string.
-// So this function is a quick hack to calculate it.
-//
-// Should implement and use Init/Update/Finalize hash functions to do it inplace.
-checksum_t _calculate_sig_checksum(const unsigned char *in) {
-	unsigned char buf[EC_SIGNATURE_SIZE + 2];
-
-	memcpy(buf, in, EC_SIGNATURE_SIZE);
-	memcpy(buf + EC_SIGNATURE_SIZE, "K1", 2);
-
-	return checksum_ripemd160(buf, EC_SIGNATURE_SIZE + 2);
 }
 
 bool wif_sig_decode(ec_signature_t& sig, const std::string& data) {
