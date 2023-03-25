@@ -85,4 +85,34 @@ bool priv_decoder_k1(const std::vector<unsigned char>& buf, ec_privkey_t& priv) 
 	return true;
 }
 
+void sig_encoder_k1(const ec_signature_t& sig, unsigned char *buf) {
+
+	checksum_t check = _checksum_suffix(sig.data(), EC_SIGNATURE_SIZE, "K1");
+
+	memcpy(buf, sig.data(), sig.size());
+	memcpy(buf + EC_SIGNATURE_SIZE, check.data(), check.size());
+}
+
+bool sig_decoder_k1(const std::vector<unsigned char>& buf, ec_signature_t& sig) {
+
+	checksum_t check;
+
+	if (buf.size() != EC_SIGNATURE_SIZE + CHECKSUM_SIZE) {
+		return false;
+	}
+
+	// Calculate checksum
+	check = _checksum_suffix(buf.data(), EC_SIGNATURE_SIZE, "K1");
+
+	// And validate
+	if (memcmp(buf.data() + EC_SIGNATURE_SIZE, check.data(), CHECKSUM_SIZE)) {
+		return false;
+	}
+
+	// Copy data to output
+	memcpy(sig.data(), buf.data(), sig.size());
+	return true;
+}
+
+
 }} // namespace libeosio::internal
