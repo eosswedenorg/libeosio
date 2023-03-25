@@ -139,16 +139,12 @@ bool wif_sig_decode(ec_signature_t& sig, const std::string& data) {
 	checksum_t checksum;
 	std::vector<unsigned char> buf;
 
-	if (data.substr(0, 7) != "SIG_K1_") {
+	if (data.substr(0, WIF_SIG_K1.length()) != WIF_SIG_K1) {
 		// Invalid prefix
 		return false;
 	}
 
-	if (!base58_decode(data.c_str() + 7, buf)) {
-		return false;
-	}
-
-	if (buf.size() != EC_SIGNATURE_SIZE + CHECKSUM_SIZE) {
+	if (!base58_decode(data.c_str() + WIF_SIG_K1.length(), buf)) {
 		return false;
 	}
 
@@ -173,7 +169,7 @@ std::string wif_sig_encode(const ec_signature_t& sig) {
 	memcpy(buf, sig.data(), sig.size());
 	memcpy(buf + EC_SIGNATURE_SIZE, check.data(), check.size());
 
-	return "SIG_K1_" + base58_encode(buf, buf + sizeof(buf));
+	return WIF_SIG_K1_" + base58_encode(buf, buf + sizeof(buf));
 }
 
 } // namespace libeosio

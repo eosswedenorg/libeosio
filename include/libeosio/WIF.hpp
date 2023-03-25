@@ -36,7 +36,7 @@ const std::string WIF_PUB_LEG = "EOS";
 const std::string WIF_PUB_K1  = "PUB_K1_";
 const std::string WIF_PVT_LEG = "";
 const std::string WIF_PVT_K1  = "PVT_K1_";
-
+const std::string WIF_SIG_K1  = "SIG_K1_";
 
 /**
  * Encode an EC private key to WIF String.
