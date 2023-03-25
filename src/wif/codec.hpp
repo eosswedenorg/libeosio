@@ -65,6 +65,20 @@ bool priv_decoder_legacy(const std::vector<unsigned char>& buf, ec_privkey_t& pr
 
 bool priv_decoder_k1(const std::vector<unsigned char>& buf, ec_privkey_t& priv);
 
+/**
+ * Signature encoders
+ */
+typedef void (*sig_encoder_t)(const ec_signature_t& sig, unsigned char *buf);
+
+void sig_encoder_k1(const ec_signature_t& sig, unsigned char *buf);
+
+/**
+ * Signature decoders
+ */
+typedef bool (*sig_decoder_t)(const std::vector<unsigned char>& buf, ec_signature_t& sig);
+
+bool sig_decoder_k1(const std::vector<unsigned char>& buf, ec_signature_t& sig);
+
 }} // namespace libeosio::internal
 
 #endif /* LIBEOSIO_CODEC_H */
