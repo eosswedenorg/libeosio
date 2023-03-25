@@ -23,6 +23,7 @@
  */
 
 #include <libeosio/checksum.hpp>
+#include <vector>
 #include "codec.hpp"
 
 namespace libeosio { namespace internal {
@@ -33,12 +34,12 @@ namespace libeosio { namespace internal {
 //
 // Should implement and use Init/Update/Finalize hash functions to do it inplace.
 checksum_t _checksum_suffix(const unsigned char *in, size_t size, const char *suffix) {
-	unsigned char buf[size + 2];
+	std::vector<unsigned char> buf(size + 2);
 
-	memcpy(buf, in, size);
-	memcpy(buf + size, suffix, 2);
+	memcpy(buf.data(), in, size);
+	memcpy(buf.data() + size, suffix, 2);
 
-	return checksum_ripemd160(buf, size + 2);
+	return checksum_ripemd160(buf.data(), buf.size());
 }
 
 void pub_encoder_k1(const ec_pubkey_t& key, unsigned char *buf) {
