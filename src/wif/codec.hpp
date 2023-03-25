@@ -47,6 +47,24 @@ bool pub_decoder_legacy(const std::vector<unsigned char>& buf, ec_pubkey_t& key)
 
 bool pub_decoder_k1(const std::vector<unsigned char>& buf, ec_pubkey_t& key);
 
+/**
+ * Private-key encoders
+ */
+typedef size_t (*priv_encoder_t)(const ec_privkey_t&, unsigned char *);
+
+size_t priv_encoder_legacy(const ec_privkey_t& priv, unsigned char *buf);
+
+size_t priv_encoder_k1(const ec_privkey_t& priv, unsigned char *buf);
+
+/**
+ * Private-key decoders
+ */
+typedef bool (*priv_decoder_t)(const std::vector<unsigned char>&, ec_privkey_t&);
+
+bool priv_decoder_legacy(const std::vector<unsigned char>& buf, ec_privkey_t& priv);
+
+bool priv_decoder_k1(const std::vector<unsigned char>& buf, ec_privkey_t& priv);
+
 }} // namespace libeosio::internal
 
 #endif /* LIBEOSIO_CODEC_H */

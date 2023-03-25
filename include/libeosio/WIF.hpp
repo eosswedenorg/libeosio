@@ -34,13 +34,14 @@ namespace libeosio {
  */
 const std::string WIF_PUB_LEG = "EOS";
 const std::string WIF_PUB_K1  = "PUB_K1_";
+const std::string WIF_PVT_LEG = "";
 const std::string WIF_PVT_K1  = "PVT_K1_";
 
 
 /**
  * Encode an EC private key to WIF String.
  */
-std::string wif_priv_encode(const ec_privkey_t& priv);
+std::string wif_priv_encode(const ec_privkey_t& priv, const std::string& prefix = WIF_PVT_LEG);
 
 /**
  * Decode an WIF String to EC private key

@@ -61,4 +61,28 @@ bool pub_decoder_k1(const std::vector<unsigned char>& buf, ec_pubkey_t& key) {
 	return true;
 }
 
+size_t priv_encoder_k1(const ec_privkey_t& priv, unsigned char *buf) {
+	checksum_t check = _checksum_suffix(priv.data(), EC_PRIVKEY_SIZE, "K1");
+
+	memcpy(buf, priv.data(), priv.size());
+	memcpy(buf + EC_PRIVKEY_SIZE, check.data(), check.size());
+
+	return EC_PRIVKEY_SIZE + CHECKSUM_SIZE;
+}
+
+bool priv_decoder_k1(const std::vector<unsigned char>& buf, ec_privkey_t& priv) {
+
+	if (buf.size() != EC_PRIVKEY_SIZE + CHECKSUM_SIZE) {
+		return false;
+	}
+
+	checksum_t check = _checksum_suffix(buf.data(), EC_PRIVKEY_SIZE, "K1");
+	if (memcmp(buf.data() + EC_PRIVKEY_SIZE, check.data(), CHECKSUM_SIZE)) {
+		return false;
+	}
+
+	memcpy(priv.data(), buf.data(), priv.size());
+	return true;
+}
+
 }} // namespace libeosio::internal
