@@ -26,6 +26,7 @@
 #include <libeosio/base58.hpp>
 #include <libeosio/checksum.hpp>
 #include <libeosio/WIF.hpp>
+#include "wif/codec.hpp"
 
 namespace libeosio {
 
@@ -91,36 +92,33 @@ std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix) {
 
 	checksum_t check;
 	unsigned char buf[EC_PUBKEY_SIZE + CHECKSUM_SIZE];
-
-	memcpy(buf, pub.data(), pub.size());
-
+	internal::pub_encoder_t encoder;
 
 	if (prefix == WIF_PUB_K1) {
-		check = _checksum_suffix(buf, EC_PUBKEY_SIZE, "K1");
+		encoder = internal::pub_encoder_k1;
 	}
 	// Legacy
 	else {
-		check = checksum_ripemd160(pub.data(), pub.size());
+		encoder = internal::pub_encoder_legacy;
 	}
 
-	memcpy(buf + EC_PUBKEY_SIZE, check.data(), check.size());
+	encoder(pub, buf);
 
 	return prefix + base58_encode(buf, buf + sizeof(buf));
 }
 
 bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data) {
 
-	const char *suffix;
+	internal::pub_decoder_t decoder = internal::pub_decoder_legacy;
 	int offset;
 	std::vector<unsigned char> buf;
 
 	// Check prefix
 	if (data.substr(0, WIF_PUB_K1.size()) == WIF_PUB_K1) {
-		suffix = "K1";
-		offset = WIF_PUB_K1.size();
+		decoder = internal::pub_decoder_k1;
+		offset =  WIF_PUB_K1.size();
 	} else {
 		// Legacy
-		suffix = "";
 		offset = 3;
 	}
 
@@ -132,18 +130,7 @@ bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data) {
 		return false;
 	}
 
-	if (suffix[0] != '\0') {
-		checksum_t check = _checksum_suffix(buf.data(), EC_PUBKEY_SIZE, suffix);
-		if (memcmp(buf.data() + EC_PUBKEY_SIZE, check.data(), CHECKSUM_SIZE)) {
-			return false;
-		}
-	} else if (!checksum_validate<checksum_ripemd160>(buf.data(), buf.size())) {
-		return false;
-	}
-
-	// Copy data to output
-	memcpy(pub.data(), buf.data(), pub.size());
-	return true;
+	return decoder(buf, pub);
 }
 
 void wif_print_key(const struct ec_keypair *key, const std::string& prefix) {

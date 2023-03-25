@@ -53,6 +53,8 @@ add_library( ${LIB_NAME} STATIC
 	src/base58.cpp
 	src/ec.cpp
 	src/WIF.cpp
+	src/wif/k1.cpp
+	src/wif/legacy.cpp
 
 	src/openssl/hash.cpp
 )
