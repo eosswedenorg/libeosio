@@ -28,16 +28,16 @@
 namespace libeosio {
 
 sha256_t* sha256(const unsigned char *data, std::size_t len, sha256_t* out) {
-	return (sha256_t *) SHA256(data, len, out->data);
+	return (sha256_t *) SHA256(data, len, (unsigned char*) out);
 }
 
 sha256_t* sha256d(const unsigned char *data, std::size_t len, sha256_t* out) {
-	SHA256(data, len, out->data);
-	return (sha256_t *) SHA256(out->data, 32, out->data);
+	SHA256(data, len, (unsigned char*) out);
+	return (sha256_t *) SHA256((unsigned char*) out, 32, (unsigned char*) out);
 }
 
 ripemd160_t* ripemd160(const unsigned char *data, std::size_t len, ripemd160_t* out) {
-	return (ripemd160_t *) RIPEMD160(data, len, out->data);
+	return (ripemd160_t *) RIPEMD160(data, len, (unsigned char*) out);
 }
 
 } // namespace libeosio

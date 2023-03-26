@@ -50,7 +50,7 @@ int ecdsa_sign(const ec_privkey_t& key, const sha256_t* digest, ec_signature_t& 
 		int v = 0;
 		secp256k1_ecdsa_recoverable_signature s;
 
-		if (!secp256k1_ecdsa_sign_recoverable(ctx, &s, digest->data, key.data(), extended_nonce_function, &counter)) {
+		if (!secp256k1_ecdsa_sign_recoverable(ctx, &s, (const unsigned char*) digest, key.data(), extended_nonce_function, &counter)) {
 			return -1;
 		}
 
@@ -86,7 +86,7 @@ int ecdsa_verify(const sha256_t* digest, const ec_signature_t& sig, const ec_pub
 
 	// Verify
 	secp256k1_ecdsa_recoverable_signature_convert(ctx, &ec_sig, &ec_rec_sig);
-	return secp256k1_ecdsa_verify(ctx, &ec_sig, digest->data, &pubkey) > 0 ? 0 : -1;
+	return secp256k1_ecdsa_verify(ctx, &ec_sig, (const unsigned char*) digest, &pubkey) > 0 ? 0 : -1;
 }
 
 int ecdsa_recover(const sha256_t* digest, const ec_signature_t& sig, ec_pubkey_t& pubkey) {
@@ -106,7 +106,7 @@ int ecdsa_recover(const sha256_t* digest, const ec_signature_t& sig, ec_pubkey_t
 
 
 	// Recover public key
-	if (!secp256k1_ecdsa_recover(ctx, &ec_pubkey, &ec_sig, digest->data)) {
+	if (!secp256k1_ecdsa_recover(ctx, &ec_pubkey, &ec_sig, (const unsigned char*) digest)) {
 		return -1;
 	}
 

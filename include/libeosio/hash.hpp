@@ -31,8 +31,8 @@ namespace libeosio {
 /**
  * Hashes
  */
-typedef struct { unsigned char data[20]; } ripemd160_t;
-typedef struct { unsigned char data[32]; } sha256_t;
+typedef unsigned char ripemd160_t[20];
+typedef unsigned char sha256_t[32];
 
 /**
  * sha256 hashing function.

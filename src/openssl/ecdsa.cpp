@@ -61,7 +61,7 @@ int ecdsa_sign(const ec_privkey_t& key, const sha256_t* digest, ec_signature_t& 
 		const BIGNUM *r, *s;
 		EC_KEY* tmpk;
 
-		ecdsa_sig = ECDSA_do_sign(digest->data, 32, ec_key);
+		ecdsa_sig = ECDSA_do_sign((const unsigned char*) digest, 32, ec_key);
 		if (ecdsa_sig == NULL) {
 			goto err2;
 		}
@@ -72,7 +72,7 @@ int ecdsa_sign(const ec_privkey_t& key, const sha256_t* digest, ec_signature_t& 
 
 		tmpk = EC_KEY_new_by_curve_name( NID_secp256k1 );
 		for (int i = 0; i < 4; i++) {
-			if (ECDSA_SIG_recover_key_GFp(tmpk, r, s, digest->data, sizeof(digest->data), i, 1) == 1) {
+			if (ECDSA_SIG_recover_key_GFp(tmpk, r, s, (const unsigned char*) digest, 32, i, 1) == 1) {
 				const EC_POINT *p = EC_KEY_get0_public_key(tmpk);
 
 				// Compare public keys
@@ -140,7 +140,7 @@ int ecdsa_verify(const sha256_t* digest, const ec_signature_t& sig, const ec_pub
 		goto err3;
 	}
 
-	if (ECDSA_do_verify(digest->data, 32, ecdsa_sig, ec_key) == 1) {
+	if (ECDSA_do_verify((const unsigned char*) digest, 32, ecdsa_sig, ec_key) == 1) {
 		ret = 0;
 	}
 
@@ -164,7 +164,7 @@ int ecdsa_recover(const sha256_t* digest, const ec_signature_t& sig, ec_pubkey_t
 	ECDSA_SIG_unserialize_rs(sig.data(), &r, &s, &recid);
 
 	// Recover public key.
-	if (ECDSA_SIG_recover_key_GFp(ec_key, r, s, digest->data, 32, recid, 1) == 1) {
+	if (ECDSA_SIG_recover_key_GFp(ec_key, r, s, (const unsigned char*) digest, 32, recid, 1) == 1) {
 
 		// Encode point to binary compressed format.
 		const EC_POINT *p = EC_KEY_get0_public_key(ec_key);
