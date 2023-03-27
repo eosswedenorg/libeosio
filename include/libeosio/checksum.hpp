@@ -26,7 +26,6 @@
 
 #include <cstdint>
 #include <cstring>
-#include <array>
 #include <libeosio/hash.hpp>
 
 namespace libeosio {
@@ -39,7 +38,7 @@ namespace libeosio {
 /**
  * Checksum datatype
  */
-typedef std::array<unsigned char, CHECKSUM_SIZE> checksum_t;
+typedef unsigned char checksum_t[CHECKSUM_SIZE];
 
 /**
  * Checksum template function.
@@ -48,19 +47,18 @@ typedef std::array<unsigned char, CHECKSUM_SIZE> checksum_t;
  *  - F: Hash calculation function, should have the signature `T* F(const unsigned char *, std::size_t, T*)`
  */
 template <typename T, T* (*F)(const unsigned char *, std::size_t, T*)>
-inline checksum_t checksum(const unsigned char* data, std::size_t len) {
-	checksum_t crc;
+inline void checksum(const unsigned char* data, std::size_t len, checksum_t crc) {
 	T hash;
 
 	F(data, len, &hash);
-	std::memcpy(crc.data(), &hash, crc.size());
-	return crc;
+	std::memcpy(crc, &hash, CHECKSUM_SIZE);
 }
 
-template <checksum_t (*F)(const unsigned char *, std::size_t)>
+template <void (*F)(const unsigned char *, std::size_t, checksum_t)>
 inline bool checksum_validate(const unsigned char* data, std::size_t len) {
-	checksum_t check = F(data, len - CHECKSUM_SIZE);
-	return !memcmp(check.data(), data + (len - CHECKSUM_SIZE), CHECKSUM_SIZE);
+	checksum_t crc;
+	F(data, len - CHECKSUM_SIZE, crc);
+	return !memcmp(crc, data + (len - CHECKSUM_SIZE), CHECKSUM_SIZE);
 }
 
 /**

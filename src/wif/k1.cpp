@@ -33,28 +33,32 @@ namespace libeosio { namespace internal {
 // So this function is a quick hack to calculate it.
 //
 // Should implement and use Init/Update/Finalize hash functions to do it inplace.
-checksum_t _checksum_suffix(const unsigned char *in, size_t size, const char *suffix) {
+void _checksum_suffix(const unsigned char *in, size_t size, const char *suffix, checksum_t check) {
 	std::vector<unsigned char> buf(size + 2);
 
 	memcpy(buf.data(), in, size);
 	memcpy(buf.data() + size, suffix, 2);
 
-	return checksum_ripemd160(buf.data(), buf.size());
+	return checksum_ripemd160(buf.data(), buf.size(), (unsigned char*) check);
 }
 
 void pub_encoder_k1(const ec_pubkey_t& key, unsigned char *buf) {
 
-	checksum_t check = _checksum_suffix(key.data(), EC_PUBKEY_SIZE, "K1");
+	checksum_t check;
+
+	_checksum_suffix(key.data(), EC_PUBKEY_SIZE, "K1", check);
 
 	memcpy(buf, key.data(), EC_PUBKEY_SIZE);
-	memcpy(buf + EC_PUBKEY_SIZE, check.data(), check.size());
+	memcpy(buf + EC_PUBKEY_SIZE, check, CHECKSUM_SIZE);
 }
 
 bool pub_decoder_k1(const std::vector<unsigned char>& buf, ec_pubkey_t& key) {
 
-	checksum_t check = _checksum_suffix(buf.data(), EC_PUBKEY_SIZE, "K1");
+	checksum_t check;
 
-	if (memcmp(buf.data() + EC_PUBKEY_SIZE, check.data(), CHECKSUM_SIZE)) {
+	_checksum_suffix(buf.data(), EC_PUBKEY_SIZE, "K1", check);
+
+	if (memcmp(buf.data() + EC_PUBKEY_SIZE, check, CHECKSUM_SIZE)) {
 		return false;
 	}
 
@@ -63,10 +67,12 @@ bool pub_decoder_k1(const std::vector<unsigned char>& buf, ec_pubkey_t& key) {
 }
 
 size_t priv_encoder_k1(const ec_privkey_t& priv, unsigned char *buf) {
-	checksum_t check = _checksum_suffix(priv.data(), EC_PRIVKEY_SIZE, "K1");
+	checksum_t check;
+
+	_checksum_suffix(priv.data(), EC_PRIVKEY_SIZE, "K1", check);
 
 	memcpy(buf, priv.data(), priv.size());
-	memcpy(buf + EC_PRIVKEY_SIZE, check.data(), check.size());
+	memcpy(buf + EC_PRIVKEY_SIZE, check, CHECKSUM_SIZE);
 
 	return EC_PRIVKEY_SIZE + CHECKSUM_SIZE;
 }
@@ -77,8 +83,9 @@ bool priv_decoder_k1(const std::vector<unsigned char>& buf, ec_privkey_t& priv) 
 		return false;
 	}
 
-	checksum_t check = _checksum_suffix(buf.data(), EC_PRIVKEY_SIZE, "K1");
-	if (memcmp(buf.data() + EC_PRIVKEY_SIZE, check.data(), CHECKSUM_SIZE)) {
+	checksum_t check;
+	_checksum_suffix(buf.data(), EC_PRIVKEY_SIZE, "K1", check);
+	if (memcmp(buf.data() + EC_PRIVKEY_SIZE, check, CHECKSUM_SIZE)) {
 		return false;
 	}
 
@@ -88,10 +95,12 @@ bool priv_decoder_k1(const std::vector<unsigned char>& buf, ec_privkey_t& priv) 
 
 void sig_encoder_k1(const ec_signature_t& sig, unsigned char *buf) {
 
-	checksum_t check = _checksum_suffix(sig.data(), EC_SIGNATURE_SIZE, "K1");
+	checksum_t check;
+
+	_checksum_suffix(sig.data(), EC_SIGNATURE_SIZE, "K1", check);
 
 	memcpy(buf, sig.data(), sig.size());
-	memcpy(buf + EC_SIGNATURE_SIZE, check.data(), check.size());
+	memcpy(buf + EC_SIGNATURE_SIZE, check, CHECKSUM_SIZE);
 }
 
 bool sig_decoder_k1(const std::vector<unsigned char>& buf, ec_signature_t& sig) {
@@ -103,10 +112,10 @@ bool sig_decoder_k1(const std::vector<unsigned char>& buf, ec_signature_t& sig) 
 	}
 
 	// Calculate checksum
-	check = _checksum_suffix(buf.data(), EC_SIGNATURE_SIZE, "K1");
+	_checksum_suffix(buf.data(), EC_SIGNATURE_SIZE, "K1", check);
 
 	// And validate
-	if (memcmp(buf.data() + EC_SIGNATURE_SIZE, check.data(), CHECKSUM_SIZE)) {
+	if (memcmp(buf.data() + EC_SIGNATURE_SIZE, check, CHECKSUM_SIZE)) {
 		return false;
 	}
 

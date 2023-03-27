@@ -31,10 +31,12 @@ namespace libeosio { namespace internal {
 
 void pub_encoder_legacy(const ec_pubkey_t& key, unsigned char *buf) {
 
-	checksum_t check = checksum_ripemd160(key.data(), EC_PUBKEY_SIZE);
+	checksum_t check;
+
+	checksum_ripemd160(key.data(), EC_PUBKEY_SIZE, check);
 
 	memcpy(buf, key.data(), EC_PUBKEY_SIZE);
-	memcpy(buf + EC_PUBKEY_SIZE, check.data(), check.size());
+	memcpy(buf + EC_PUBKEY_SIZE, check, CHECKSUM_SIZE);
 }
 
 bool pub_decoder_legacy(const std::vector<unsigned char>& buf, ec_pubkey_t& key) {
@@ -52,8 +54,8 @@ size_t priv_encoder_legacy(const ec_privkey_t& priv, unsigned char *buf) {
 
 	buf[0] = PRIV_KEY_PREFIX;
 	memcpy(buf + 1, priv.data(), EC_PRIVKEY_SIZE);
-	check = checksum_sha256d(buf, 1 + EC_PRIVKEY_SIZE);
-	memcpy(buf + 1 + EC_PRIVKEY_SIZE, check.data(), check.size());
+	checksum_sha256d(buf, 1 + EC_PRIVKEY_SIZE, check);
+	memcpy(buf + 1 + EC_PRIVKEY_SIZE, check, CHECKSUM_SIZE);
 
 	return 1 + EC_PRIVKEY_SIZE + CHECKSUM_SIZE;
 }
