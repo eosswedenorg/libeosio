@@ -123,10 +123,10 @@ bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data) {
 	return decoder(buf, pub);
 }
 
-void wif_print_key(const struct ec_keypair *key, const std::string& prefix) {
+void wif_print_key(const struct ec_keypair *key, const wif_codec_t& codec) {
 
-	std::cout << "Public: " << wif_pub_encode(key->pub, prefix) << std::endl;
-	std::cout << "Private: " << wif_priv_encode(key->secret, prefix) << std::endl;
+	std::cout << "Public: " << wif_pub_encode(key->pub, codec.pub) << std::endl;
+	std::cout << "Private: " << wif_priv_encode(key->secret, codec.pvt) << std::endl;
 }
 
 bool wif_sig_decode(ec_signature_t& sig, const std::string& data) {

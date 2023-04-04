@@ -78,7 +78,7 @@ bool wif_pub_decode(ec_pubkey_t& pub, const std::string& data);
 /**
  * Prints an EC keypair in WIF format to standard out.
  */
-void wif_print_key(const struct ec_keypair *key, const std::string& prefix = WIF_PUB_LEG);
+void wif_print_key(const struct ec_keypair *key, const wif_codec_t& codec = WIF_CODEC_K1);
 
 /**
  * Signatures
