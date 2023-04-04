@@ -58,7 +58,7 @@ inline wif_codec_t wif_create_legacy_codec(const std::string& pub_prefix) {
 /**
  * Encode an EC private key to WIF String.
  */
-std::string wif_priv_encode(const ec_privkey_t& priv, const std::string& prefix = WIF_PVT_LEG);
+std::string wif_priv_encode(const ec_privkey_t& priv, const std::string& prefix = WIF_PVT_K1);
 
 /**
  * Decode an WIF String to EC private key
@@ -68,7 +68,7 @@ bool wif_priv_decode(ec_privkey_t& priv, const std::string& data);
 /**
  * Encode an EC public key to WIF String.
  */
-std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix = WIF_PUB_LEG);
+std::string wif_pub_encode(const ec_pubkey_t& pub, const std::string& prefix = WIF_PUB_K1);
 
 /**
  * Decode an WIF String to EC public key
