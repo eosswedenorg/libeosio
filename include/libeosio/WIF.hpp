@@ -39,6 +39,23 @@ extern const std::string WIF_PVT_K1;
 extern const std::string WIF_SIG_K1;
 
 /**
+ * Codecs
+ */
+
+// A WIF Codec is an public and private key prefix pair.
+typedef struct {
+	std::string pub;
+	std::string pvt;
+} wif_codec_t;
+
+extern const wif_codec_t WIF_CODEC_K1;
+extern const wif_codec_t WIF_CODEC_LEG;
+
+inline wif_codec_t wif_create_legacy_codec(const std::string& pub_prefix) {
+	return { pub_prefix, WIF_PVT_LEG };
+}
+
+/**
  * Encode an EC private key to WIF String.
  */
 std::string wif_priv_encode(const ec_privkey_t& priv, const std::string& prefix = WIF_PVT_LEG);

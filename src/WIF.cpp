@@ -36,6 +36,9 @@ const std::string WIF_PVT_LEG = "";
 const std::string WIF_PVT_K1  = "PVT_K1_";
 const std::string WIF_SIG_K1  = "SIG_K1_";
 
+const wif_codec_t WIF_CODEC_K1  = { WIF_PUB_K1, WIF_PVT_K1 };
+const wif_codec_t WIF_CODEC_LEG = wif_create_legacy_codec(WIF_PUB_LEG);
+
 std::string wif_priv_encode(const ec_privkey_t& priv, const std::string& prefix) {
 
 	checksum_t check;
